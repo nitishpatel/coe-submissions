@@ -13,6 +13,12 @@ type Actions = {
   deleteMovie?: (id: string) => void;
   setFilter?: (filter: Filter) => void;
 };
+const validateFilter = (filter: Filter) => {
+  const validFilters: Filter[] = ['all', 'watched', 'unwatched'];
+  if (!validFilters.includes(filter)) {
+    throw new Error("Invalid filter");
+  }
+};
 
 export const useMovieStore = create<State & Actions>()(
   persist<State & Actions>(
@@ -50,6 +56,7 @@ export const useMovieStore = create<State & Actions>()(
         }))
       },
       setFilter: (filter) => {
+        validateFilter(filter);
         set({ filter });
       }
     }),
