@@ -77,4 +77,9 @@ describe('movie store', () => {
     const { filter } = useMovieStore.getState();
     expect(filter).toBe("watched");
   });
+
+  it("should not set any value in filter", () => {
+    const movieStore = useMovieStore.getState();
+    expect(() => movieStore.setFilter("ok")).toThrow("Invalid filter");
+  });
 });
