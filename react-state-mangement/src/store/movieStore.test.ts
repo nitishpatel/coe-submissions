@@ -70,4 +70,11 @@ describe('movie store', () => {
     expect(movies.length).toBe(1);
     expect(movies[0].title).toBe("Spiderman");
   });
+
+  it("should set filter", () => {
+    const movieStore = useMovieStore.getState();
+    movieStore.setFilter?.("watched");
+    const { filter } = useMovieStore.getState();
+    expect(filter).toBe("watched");
+  });
 });
