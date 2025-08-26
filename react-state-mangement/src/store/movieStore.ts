@@ -11,6 +11,7 @@ type Actions = {
   addMovie: (title: string, note?: string) => void;
   toggleWatched:(id:string) => void;
   deleteMovie?: (id: string) => void;
+  setFilter?: (filter: Filter) => void;
 };
 
 export const useMovieStore = create<State & Actions>()(
@@ -47,6 +48,9 @@ export const useMovieStore = create<State & Actions>()(
         set((s) => ({
           movies: s.movies.filter(m => m.id !== id)
         }))
+      },
+      setFilter: (filter) => {
+        set({ filter });
       }
     }),
     { name: 'movie-store' }
