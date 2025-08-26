@@ -26,4 +26,14 @@ describe('movie store', () => {
     expect(movies[0].note).toBe("At Home");
     expect(movies[0].watched).toBe(false);
   });
+
+  it("should trim the movie names when adding",()=>{
+    const movieStore = useMovieStore.getState();
+    movieStore.addMovie?.("   ");
+    movieStore.addMovie?.(" ABCD ");
+    movieStore.addMovie?.("3 IDIOTS");
+    const {movies} = useMovieStore.getState();
+    expect(movies.length).toBe(2);
+    expect(movies[0].name).toBe("ABCD");
+  })
 });
