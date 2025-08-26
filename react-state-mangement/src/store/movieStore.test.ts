@@ -36,4 +36,15 @@ describe('movie store', () => {
     expect(movies.length).toBe(2);
     expect(movies[0].title).toBe("ABCD");
   })
+
+  it("Should toggle the watched movie",()=>{
+    const movieStore = useMovieStore.getState();
+    movieStore.addMovie?.("3 IDIOTS");
+    movieStore.addMovie?.("Spiderman");
+    const {movies} = useMovieStore.getState();
+
+    movieStore.toggleWatched(movies[0].id);
+    expect(movies[0].watched).toBe(true);
+    expect(movies[1].watched).toBe(false);
+  });
 });
