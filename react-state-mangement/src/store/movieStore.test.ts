@@ -53,4 +53,21 @@ describe('movie store', () => {
     expect(movies[0].watched).toBe(false);
     expect(movies[1].watched).toBe(false);
   });
+
+  it("should be able to delete a movie",()=>{
+    const movieStore = useMovieStore.getState();
+    movieStore.addMovie?.("3 IDIOTS");
+    movieStore.addMovie?.("Spiderman");
+    let movies = useMovieStore.getState().movies;
+    expect(movies.length).toBe(2);
+
+    movieStore.deleteMovie?.("abcd");
+    movies = useMovieStore.getState().movies;
+    expect(movies.length).toBe(2);
+
+    movieStore.deleteMovie?.(movies[0].id);
+    movies = useMovieStore.getState().movies;
+    expect(movies.length).toBe(1);
+    expect(movies[0].title).toBe("Spiderman");
+  });
 });
