@@ -34,6 +34,6 @@ describe('movie store', () => {
     movieStore.addMovie?.("3 IDIOTS");
     const {movies} = useMovieStore.getState();
     expect(movies.length).toBe(2);
-    expect(movies[0].name).toBe("ABCD");
+    expect(movies[0].title).toBe("ABCD");
   })
 });

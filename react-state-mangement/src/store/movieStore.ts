@@ -23,10 +23,12 @@ export const useMovieStore = create<State & Actions>()(
         const id = crypto.randomUUID();
         const createdAt = new Date().getTime();
         const watched = false;
+        const cleanedTitle = title.trim();
+        if (!cleanedTitle) return;
         set((s) => ({
           movies: [
-            { id: id, title: title, note: note, watched: watched, createdAt: createdAt },
-            ...s.movies
+            ...s.movies,
+            { id: id, title: cleanedTitle, note: note, watched: watched, createdAt: createdAt }
           ]
         }))
       },
