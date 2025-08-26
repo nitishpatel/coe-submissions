@@ -41,10 +41,16 @@ describe('movie store', () => {
     const movieStore = useMovieStore.getState();
     movieStore.addMovie?.("3 IDIOTS");
     movieStore.addMovie?.("Spiderman");
-    const {movies} = useMovieStore.getState();
+    let movies = useMovieStore.getState().movies;
 
     movieStore.toggleWatched(movies[0].id);
+    movies = useMovieStore.getState().movies;
     expect(movies[0].watched).toBe(true);
+    expect(movies[1].watched).toBe(false);
+
+    movieStore.toggleWatched(movies[0].id);
+    movies = useMovieStore.getState().movies;
+    expect(movies[0].watched).toBe(false);
     expect(movies[1].watched).toBe(false);
   });
 });

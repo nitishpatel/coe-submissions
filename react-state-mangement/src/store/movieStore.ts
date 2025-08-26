@@ -1,7 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import type { Filter, Movie } from '../types';
-
 type State = {
   movies: Movie[];
   filter: Filter;
@@ -10,6 +9,7 @@ type State = {
 
 type Actions = {
   addMovie: (title: string, note?: string) => void;
+  toggleWatched:(id:string) => void;
 };
 
 export const useMovieStore = create<State & Actions>()(
@@ -30,6 +30,16 @@ export const useMovieStore = create<State & Actions>()(
             ...s.movies,
             { id: id, title: cleanedTitle, note: note, watched: watched, createdAt: createdAt }
           ]
+        }))
+      },
+
+      toggleWatched:(id) =>{
+        const movie = _get().movies.find(m=>m.id===id);
+        if(!movie) return;
+        set((s) => ({
+          movies: s.movies.map(m =>
+            m.id === id ? { ...m, watched: !m.watched } : m
+          )
         }))
       },
     }),
