@@ -14,7 +14,7 @@ type Actions = {
   setFilter?: (filter: Filter) => void;
 };
 const validateFilter = (filter: Filter) => {
-  const validFilters: Filter[] = ['all', 'watched', 'unwatched'];
+  const validFilters: Filter[] = ['all', 'watched', 'pending'];
   if (!validFilters.includes(filter)) {
     throw new Error("Invalid filter");
   }
