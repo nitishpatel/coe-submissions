@@ -1,0 +1,14 @@
+type Query
+type Mutation
+scalar DateTime
+
+enum Filter {
+  all
+  pending
+  watched
+}
+
+input AddMovieInput {
+  title: String!
+  note: String
+}

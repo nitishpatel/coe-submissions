@@ -1,0 +1,21 @@
+type Movie {
+  id: ID!
+  title: String!
+  note: String
+  watched: Boolean!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+extend type Query {
+  movies(filter: Filter = all): [Movie!]!
+  movie(id: ID!): Movie
+}
+
+extend type Mutation {
+  addMovie(input: AddMovieInput!): Movie!
+  toggleWatched(id: ID!): Movie!
+  setWatched(id: ID!, watched: Boolean!): Movie!
+  deleteMovie(id: ID!): Boolean!
+  clearWatched: Int!
+}
