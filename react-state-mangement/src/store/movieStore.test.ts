@@ -80,6 +80,6 @@ describe('movie store', () => {
 
   it("should not set any value in filter", () => {
     const movieStore = useMovieStore.getState();
-    expect(() => movieStore.setFilter("ok")).toThrow("Invalid filter");
+    expect(() => movieStore.setFilter!("ok")).toThrow("Invalid filter");
   });
 });
