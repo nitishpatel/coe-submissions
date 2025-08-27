@@ -96,3 +96,28 @@ def test_password_mandatory():
     response_json = response.json()
     assert response_json['errors']['password'][0]['code'] == 'required'
     assert response_json['errors']['password'][0]['message'] == 'Field required'
+
+def test_password_min_max_length():
+    response = client.post("/register", json={
+        "username": "testuser",
+        "email": "testuser@example.com",
+        "password": "pass",
+        "dob": "2000-01-01"
+    })
+
+    assert response.status_code == 422
+    response_json = response.json()
+    assert response_json['errors']['password'][0]['code'] == 'invalid'
+    assert response_json['errors']['password'][0]['message'] == 'String should have at least 8 characters'
+
+    response = client.post("/register", json={
+        "username": "testuser",
+        "email": "testuser@example.com",
+        "password": "a" * 21,
+        "dob": "2000-01-01"
+    })
+
+    assert response.status_code == 422
+    response_json = response.json()
+    assert response_json['errors']['password'][0]['code'] == 'invalid'
+    assert response_json['errors']['password'][0]['message'] == 'String should have at most 20 characters'
