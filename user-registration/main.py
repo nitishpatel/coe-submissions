@@ -48,7 +48,7 @@ users_db = []
 class User(BaseModel):
     username: str = Field(..., min_length=2, max_length=20)
     email: EmailStr
-    password: str
+    password: str = Field(..., min_length=8, max_length=20)
     dob: str
 
 class UserResponse(BaseModel):
