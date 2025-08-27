@@ -43,3 +43,9 @@ def test_pydantic_request_validation():
     assert response.status_code == 422
     assert response.json()["errors"]["title"][0]["message"] == "Field required"
     assert response.json()["errors"]["director"][0]["message"] == "Field required"
+
+def test_min_str_validation():
+    response = client.post("/movie-validation/", json={"title": "A", "director": "B"})
+    assert response.status_code == 422
+    assert response.json()["errors"]["title"][0]["message"] == "String should have at least 2 characters"
+    assert response.json()["errors"]["director"][0]["message"] == "String should have at least 2 characters"
