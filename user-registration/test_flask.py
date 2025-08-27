@@ -40,3 +40,11 @@ def test_min_max_length_name_validation(client):
     assert res.json["validation_error"]["body_params"][0]["loc"] == ["name"]
     assert res.json["validation_error"]["body_params"][0]["msg"] == "String should have at most 100 characters"
     assert res.json["validation_error"]["body_params"][0]["type"] == "string_too_long"
+
+
+def test_price_greater_than_zero_validation(client):
+    res = client.post("/items/", json={"name": "Item", "price": 0.0})
+    assert res.status_code == 400
+    assert res.json["validation_error"]["body_params"][0]["loc"] == ["price"]
+    assert res.json["validation_error"]["body_params"][0]["msg"] == "Input should be greater than 0"
+    assert res.json["validation_error"]["body_params"][0]["type"] == "greater_than"
