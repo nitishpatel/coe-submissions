@@ -46,7 +46,7 @@ app.add_exception_handler(RequestValidationError, pydantic_validation_exception_
 users_db = []
 
 class User(BaseModel):
-    username: str
+    username: str = Field(..., min_length=2, max_length=20)
     email: str
     password: str
     dob: str
