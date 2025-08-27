@@ -56,3 +56,16 @@ def test_username_min_max_length():
     response_json = response.json()
     assert response_json['errors']['username'][0]['code'] == 'invalid'
     assert response_json['errors']['username'][0]['message'] == 'String should have at most 20 characters'
+
+
+def test_email_mandatory():
+    response = client.post("/register", json={
+        "username": "testuser",
+        "password": "password123",
+        "dob": "2000-01-01"
+    })
+
+    assert response.status_code == 422
+    response_json = response.json()
+    assert response_json['errors']['email'][0]['code'] == 'required'
+    assert response_json['errors']['email'][0]['message'] == 'Field required'
