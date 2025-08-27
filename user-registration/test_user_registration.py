@@ -8,7 +8,7 @@ def test_success_user_registration():
     response = client.post("/register", json={
         "username": "testuser",
         "email": "testuser@example.com",
-        "password": "password123",
+        "password": "password@123",
         "dob": "2000-01-01"
     })
 
@@ -23,7 +23,7 @@ def test_success_user_registration():
 def test_username_mandatory():
     response = client.post("/register", json={
         "email": "testuser@example.com",
-        "password": "password123",
+        "password": "password@123",
         "dob": "2000-01-01"
     })
 
@@ -36,7 +36,7 @@ def test_username_min_max_length():
     response = client.post("/register", json={
         "username": "a",
         "email": "testuser@example.com",
-        "password": "password123",
+        "password": "password@123",
         "dob": "2000-01-01"
     })
 
@@ -48,7 +48,7 @@ def test_username_min_max_length():
     response = client.post("/register", json={
         "username": "a" * 21,
         "email": "testuser@example.com",
-        "password": "password123",
+        "password": "password@123",
         "dob": "2000-01-01"
     })
 
@@ -61,7 +61,7 @@ def test_username_min_max_length():
 def test_email_mandatory():
     response = client.post("/register", json={
         "username": "testuser",
-        "password": "password123",
+        "password": "password@123",
         "dob": "2000-01-01"
     })
 
@@ -75,7 +75,7 @@ def test_invalid_email_format():
     response = client.post("/register", json={
         "username": "testuser",
         "email": "invalid-email",
-        "password": "password123",
+        "password": "password@123",
         "dob": "2000-01-01"
     })
 
@@ -121,3 +121,25 @@ def test_password_min_max_length():
     response_json = response.json()
     assert response_json['errors']['password'][0]['code'] == 'invalid'
     assert response_json['errors']['password'][0]['message'] == 'String should have at most 20 characters'
+
+def test_password_must_have_number():
+    payload = {
+        "username": "nitish",
+        "email": "nitish@example.com",
+        "password": "Password!",  # no number
+        "dob": "1995-01-01"
+    }
+    res = client.post("/register", json=payload)
+    assert res.status_code == 422
+    assert res.json()["errors"]["password"][0]["message"] == "Value error, Password must include at least one number"
+
+def test_password_must_have_special_char():
+    payload = {
+        "username": "nitish",
+        "email": "nitish@example.com",
+        "password": "Password1",  # no special character
+        "dob": "1995-01-01"
+    }
+    res = client.post("/register", json=payload)
+    assert res.status_code == 422
+    assert res.json()["errors"]["password"][0]["message"] == "Value error, Password must include at least one special character"
