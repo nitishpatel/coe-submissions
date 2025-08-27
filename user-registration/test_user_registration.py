@@ -168,4 +168,4 @@ def test_invalid_dob_format():
     assert response.status_code == 422
     response_json = response.json()
     assert response_json['errors']['dob'][0]['code'] == 'invalid'
-    assert response_json['errors']['dob'][0]['message'] == 'Invalid date format'
+    assert response_json['errors']['dob'][0]['message'] == 'Input should be a valid date or datetime, invalid character in year'
