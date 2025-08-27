@@ -156,3 +156,16 @@ def test_dob_mandatory():
     response_json = response.json()
     assert response_json['errors']['dob'][0]['code'] == 'required'
     assert response_json['errors']['dob'][0]['message'] == 'Field required'
+
+def test_invalid_dob_format():
+    response = client.post("/register", json={
+        "username": "testuser",
+        "email": "testuser@example.com",
+        "password": "password@123",
+        "dob": "invalid-date-format"
+    })
+
+    assert response.status_code == 422
+    response_json = response.json()
+    assert response_json['errors']['dob'][0]['code'] == 'invalid'
+    assert response_json['errors']['dob'][0]['message'] == 'Invalid date format'
