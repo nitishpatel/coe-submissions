@@ -4,7 +4,7 @@ from main import app
 
 client = TestClient(app)
 
-def test_success_user_registration(client):
+def test_success_user_registration():
     response = client.post("/register", json={
         "username": "testuser",
         "email": "testuser@example.com",
