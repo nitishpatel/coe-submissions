@@ -69,3 +69,17 @@ def test_email_mandatory():
     response_json = response.json()
     assert response_json['errors']['email'][0]['code'] == 'required'
     assert response_json['errors']['email'][0]['message'] == 'Field required'
+
+
+def test_invalid_email_format():
+    response = client.post("/register", json={
+        "username": "testuser",
+        "email": "invalid-email",
+        "password": "password123",
+        "dob": "2000-01-01"
+    })
+
+    assert response.status_code == 422
+    response_json = response.json()
+    assert response_json['errors']['email'][0]['code'] == 'invalid'
+    assert response_json['errors']['email'][0]['message'] == 'String does not match regex'
