@@ -31,3 +31,28 @@ def test_username_mandatory():
     response_json = response.json()
     assert response_json['errors']['username'][0]['code'] == 'required'
     assert response_json['errors']['username'][0]['message'] == 'Field required'
+
+def test_username_min_max_length():
+    response = client.post("/register", json={
+        "username": "a",
+        "email": "testuser@example.com",
+        "password": "password123",
+        "dob": "2000-01-01"
+    })
+
+    assert response.status_code == 422
+    response_json = response.json()
+    assert response_json['errors']['username'][0]['code'] == 'invalid'
+    assert response_json['errors']['username'][0]['message'] == 'String should have at least 2 characters'
+
+    response = client.post("/register", json={
+        "username": "a" * 21,
+        "email": "testuser@example.com",
+        "password": "password123",
+        "dob": "2000-01-01"
+    })
+
+    assert response.status_code == 422
+    response_json = response.json()
+    assert response_json['errors']['username'][0]['code'] == 'invalid'
+    assert response_json['errors']['username'][0]['message'] == 'String should have at most 20 characters'
