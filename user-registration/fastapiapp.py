@@ -2,7 +2,8 @@ from fastapi import FastAPI
 from pydantic import BaseModel,StringConstraints
 from typing_extensions import Annotated
 from fastapi.responses import JSONResponse
-
+from fastapi.exceptions import RequestValidationError
+import uuid
 app = FastAPI()
 
 @app.get("/")
@@ -59,9 +60,7 @@ async def pydantic_validation_exception_handler(request, exc):
         status_code=422,
         content={"detail": [{"msg": "Field required", "type": "value_error.missing"}]},
     )
-from fastapi.exceptions import RequestValidationError
-from fastapi.responses import JSONResponse
-import uuid
+
 
 def _normalize_errors(items: list[dict]) -> dict[str, list[dict]]:
     # Convert Pydantic’s “loc/type/msg” to a UI-friendly map

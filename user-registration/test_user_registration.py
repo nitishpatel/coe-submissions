@@ -19,3 +19,15 @@ def test_success_user_registration():
         "email": "testuser@example.com",
         "dob": "2000-01-01"
     }
+
+def test_username_mandatory():
+    response = client.post("/register", json={
+        "email": "testuser@example.com",
+        "password": "password123",
+        "dob": "2000-01-01"
+    })
+
+    assert response.status_code == 422
+    response_json = response.json()
+    assert response_json['errors']['username'][0]['code'] == 'required'
+    assert response_json['errors']['username'][0]['message'] == 'Field required'
