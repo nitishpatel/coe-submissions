@@ -143,3 +143,16 @@ def test_password_must_have_special_char():
     res = client.post("/register", json=payload)
     assert res.status_code == 422
     assert res.json()["errors"]["password"][0]["message"] == "Value error, Password must include at least one special character"
+
+
+def test_dob_mandatory():
+    response = client.post("/register", json={
+        "username": "testuser",
+        "email": "testuser@example.com",
+        "password": "password@123"
+    })
+
+    assert response.status_code == 422
+    response_json = response.json()
+    assert response_json['errors']['dob'][0]['code'] == 'required'
+    assert response_json['errors']['dob'][0]['message'] == 'Field required'
