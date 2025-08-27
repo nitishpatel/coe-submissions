@@ -1,5 +1,6 @@
 from fastapi import FastAPI
-from pydantic import BaseModel
+from pydantic import BaseModel,StringConstraints
+from typing_extensions import Annotated
 from fastapi.responses import JSONResponse
 
 app = FastAPI()
@@ -40,10 +41,14 @@ def get_movie(movie_id: int, director: str = None):
     return {"movie_id": movie_id, "title": "Inception", "director": "Christopher Nolan"}
 
 
+VALIDATED_STR = Annotated[
+    str,
+    StringConstraints(min_length=2, max_length=20)
+]
 
 class Movie(BaseModel):
-    title: str
-    director: str
+    title: VALIDATED_STR
+    director: VALIDATED_STR
 
 @app.post("/movie-validation/")
 def validate_movie(movie: Movie):
