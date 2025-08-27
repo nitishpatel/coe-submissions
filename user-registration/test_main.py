@@ -49,3 +49,9 @@ def test_min_str_validation():
     assert response.status_code == 422
     assert response.json()["errors"]["title"][0]["message"] == "String should have at least 2 characters"
     assert response.json()["errors"]["director"][0]["message"] == "String should have at least 2 characters"
+
+def test_max_str_validation():
+    response = client.post("/movie-validation/", json={"title": "A" * 22, "director": "B" * 22})
+    assert response.status_code == 422
+    assert response.json()["errors"]["title"][0]["message"] == "String should have at most 20 characters"
+    assert response.json()["errors"]["director"][0]["message"] == "String should have at most 20 characters"
