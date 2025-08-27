@@ -39,6 +39,7 @@ def test_path_and_query_parameter():
     assert response.json() == {"movie_id": 1, "title": "Inception", "director": "ABCD"}
 
 def test_pydantic_request_validation():
-    response = client.post("/movie-validation/", json={"title": None, "director": None})
-    assert response.status_code == 400
-    assert response.json() == {"detail": [{"loc": ["body", "title"], "msg": "field required", "type": "value_error.missing"}, {"loc": ["body", "director"], "msg": "field required", "type": "value_error.missing"}]}
+    response = client.post("/movie-validation/", json={})
+    assert response.status_code == 422
+    assert response.json()["errors"]["title"][0]["message"] == "Field required"
+    assert response.json()["errors"]["director"][0]["message"] == "Field required"
