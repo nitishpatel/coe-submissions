@@ -82,4 +82,4 @@ def test_invalid_email_format():
     assert response.status_code == 422
     response_json = response.json()
     assert response_json['errors']['email'][0]['code'] == 'invalid'
-    assert response_json['errors']['email'][0]['message'] == 'String does not match regex'
+    assert response_json['errors']['email'][0]['message'] == 'value is not a valid email address: An email address must have an @-sign.'
