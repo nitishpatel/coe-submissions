@@ -1,0 +1,20 @@
+[project]
+name = "task-manager-backend"
+version = "0.1.0"
+description = "Task Manager Backend"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "alembic>=1.16.5",
+    "fastapi>=0.116.1",
+    "psycopg2-binary>=2.9.10",
+    "pydantic>=2.11.7",
+    "sqlalchemy>=2.0.43",
+    "uvicorn[standard]>=0.35.0",
+]
+
+[dependency-groups]
+dev = [
+    "httpx>=0.28.1",
+    "pytest>=8.4.1",
+]
