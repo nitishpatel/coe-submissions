@@ -1,9 +1,10 @@
 from fastapi import FastAPI
-from pydantic import BaseModel, EmailStr, Field,field_validator
+from pydantic import BaseModel, EmailStr, Field,field_validator,NaiveDatetime
 from fastapi.responses import JSONResponse
 from fastapi.exceptions import RequestValidationError
 import uuid
 import re
+from datetime import date
 app = FastAPI()
 
 
@@ -56,7 +57,7 @@ class User(BaseModel):
     email: EmailStr
     password: str = Field(..., min_length=8, max_length=20,
                           description="8-20 chars, must include at least one number and one special character",)
-    dob: str
+    dob: date
 
     @field_validator("password")
     @classmethod
@@ -70,11 +71,12 @@ class User(BaseModel):
             raise ValueError("Password must include at least one special character")
         return v
 
+
 class UserResponse(BaseModel):
     id: int
     username: str
     email: str
-    dob: str
+    dob: date
 
 
 @app.post("/register", response_model=UserResponse, status_code=201)
