@@ -41,3 +41,22 @@ def test_task_delete_api(client, make_task):
     task = client.get("/api/v1/tasks").json()[0]
     delete_response = client.delete(f"/api/v1/tasks/{task['id']}")
     assert delete_response.status_code == 204
+
+def test_get_invalid_task(client):
+    response = client.get("/api/v1/tasks/invalid_id")
+    assert response.status_code == 404
+
+def test_get_valid_task(client, make_task):
+    make_task()
+    task = client.get("/api/v1/tasks").json()[0]
+    response = client.get(f"/api/v1/tasks/{task['id']}")
+    assert response.status_code == 200
+    assert response.json()["id"] == task["id"]
+
+def test_update_invalid_task(client):
+    response = client.patch("/api/v1/tasks/invalid_id", json={"title": "Updated Task"})
+    assert response.status_code == 404
+
+def test_delete_invalid_task(client):
+    response = client.delete("/api/v1/tasks/invalid_id")
+    assert response.status_code == 404
