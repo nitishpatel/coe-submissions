@@ -24,3 +24,11 @@ def test_service_task_delete(db):
     deleted = svc.delete(db, created.id)   # pass id
     assert deleted is True
     assert svc.get(db, created.id) is None
+
+def test_service_list(db):
+    svc = TaskService()
+    for i in range(5):
+        svc.create(db, TaskCreate(title=f"Task {i}"))
+    tasks = svc.list(db)
+    assert len(tasks) == 5
+    assert all(task.title.startswith("Task") for task in tasks)
