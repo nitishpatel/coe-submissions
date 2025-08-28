@@ -11,3 +11,8 @@ def test_task_create_with_default_status():
     assert task.status == TaskStatus.TODO
 
 
+def test_task_title_min_and_max_length():
+    with pytest.raises(Exception):
+        TaskCreate(title="A", description="Invalid description")
+    with pytest.raises(Exception):
+        TaskCreate(title="A" * 201, description="Invalid description")
