@@ -28,3 +28,10 @@ def test_list_returns_tasks_ordered_by_created_desc(db):
     items = repo.list(db, limit=2, offset=0)
     assert len(items) == 2
     assert isinstance(items[0], Task)
+
+def test_task_delete(db):
+    t = repo.create(db, title="To be deleted", description=None, status=TaskStatus.TODO)
+    db.flush()
+    task_id = t.id
+    repo.delete(db, t)
+    assert repo.get(db, task_id) is None
