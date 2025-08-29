@@ -24,3 +24,6 @@ class SqlAlchemyUserRepository(
         db.flush()
         return user
 
+    def get(self, db: Session, user_id: str) -> User | None:
+        return db.get(User, user_id)
+
