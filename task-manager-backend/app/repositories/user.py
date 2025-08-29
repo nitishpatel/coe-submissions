@@ -27,3 +27,5 @@ class SqlAlchemyUserRepository(
     def get(self, db: Session, user_id: str) -> User | None:
         return db.get(User, user_id)
 
+    def get_by_email(self, db: Session, email: str) -> User | None:
+        return db.query(User).filter(User.email == email).first()
