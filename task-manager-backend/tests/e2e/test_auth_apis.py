@@ -34,3 +34,8 @@ def test_login_api_success(client, user_signup):
     assert response.status_code == 200
     assert LoginResponse.model_validate(response.json())
     assert response.json()["user"]["email"] == email
+
+def test_invalid_user_login(client):
+    response = client.post("/api/v1/auth/login", json={"email": "test@example.in", "password": "wrongpassword!"})
+    assert response.status_code == 401
+    assert response.json()["detail"] == "Invalid email or password"
