@@ -38,3 +38,20 @@ def test_get_user(db, user_repo: SqlAlchemyUserRepository):
 def test_get_invalid_user(db, user_repo: SqlAlchemyUserRepository):
     fetched_user = user_repo.get(db=db, user_id="non-existent-id")
     assert fetched_user is None
+
+def test_get_user_by_email(db, user_repo: SqlAlchemyUserRepository):
+    user = user_repo.create(
+        db=db,
+        email="emailtest@1234",
+        full_name="Email Test User",
+        hashed_password="hashedpassword123!"
+    )
+    db.commit()
+    fetched_user = user_repo.get_by_email(db=db, email="emailtest@1234")
+    assert fetched_user is not None
+    assert fetched_user.id == user.id
+    assert fetched_user.email == "emailtest@1234"
+
+def test_get_invalid_user_by_email(db, user_repo: SqlAlchemyUserRepository):
+    fetched_user = user_repo.get_by_email(db=db, email="nonexistent@1234")
+    assert fetched_user is None
