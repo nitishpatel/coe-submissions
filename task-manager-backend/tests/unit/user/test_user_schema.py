@@ -78,3 +78,34 @@ def test_password_min_1_digit_and_special_character():
     errors = exc_info.value.errors()
     assert errors[0]["loc"] == ("password",)
     assert errors[0]["type"] == "value_error"
+
+    password = "Password1"
+    with pytest.raises(ValidationError) as exc_info:
+        UserSignUpRequest(
+            email="test@example.com",
+            full_name="Test User",
+            password=password
+        )
+    errors = exc_info.value.errors()
+    assert errors[0]["loc"] == ("password",)
+    assert errors[0]["type"] == "value_error"
+
+    password = "Password!"
+    with pytest.raises(ValidationError) as exc_info:
+        UserSignUpRequest(
+            email="test@exmaple.com",
+            full_name="Test User",
+            password=password
+        )
+    errors = exc_info.value.errors()
+    assert errors[0]["loc"] == ("password",)
+    assert errors[0]["type"] == "value_error"
+    password = "Password1!"
+    user = UserSignUpRequest(
+        email="test@example.co",
+        full_name="Test User",
+        password=password
+    )
+    assert user.email == "test@example.co"
+    assert user.full_name == "Test User"
+    assert user.password == "Password1!"
