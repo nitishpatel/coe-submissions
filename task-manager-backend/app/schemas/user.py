@@ -1,4 +1,5 @@
 from pydantic import BaseModel,EmailStr,ConfigDict,Field,field_validator
+from datetime import datetime
 import re
 
 class UserSignUpRequest(BaseModel):
@@ -15,10 +16,11 @@ class UserSignUpRequest(BaseModel):
         return value
 
 class UserRead(BaseModel):
-    model_config = ConfigDict(from_attributes=True)
     id: str
     email: EmailStr
     full_name: str | None = None
     is_active: bool
-    created_at: str
-    updated_at: str
+    created_at: datetime
+    updated_at: datetime
+
+    model_config = ConfigDict(from_attributes=True)
