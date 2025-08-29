@@ -17,3 +17,12 @@ The Day 3 tasks for the same are as follows:
 
 Create a Task Manager API with CRUD operations using PostgreSQL & SQLAlchemy
 
+
+
+## Day 4
+
+-	JWT Authentication
+-	Generating and validating tokens
+-	Protecting API routes
+-	Password Hashing & Security
+-	Using bcrypt for password hashing
