@@ -21,3 +21,20 @@ def test_create_user(db, user_repo: SqlAlchemyUserRepository):
     assert user.is_active is True
     assert user.is_superuser is False
     assert isinstance(user, UserModel)
+
+def test_get_user(db, user_repo: SqlAlchemyUserRepository):
+    user = user_repo.create(
+        db=db,
+        email="gettest@1234",
+        full_name="Get Test User",
+        hashed_password="hashedpassword123!"
+    )
+    db.commit()
+    fetched_user = user_repo.get(db=db, user_id=user.id)
+    assert fetched_user is not None
+    assert fetched_user.id == user.id
+    assert fetched_user.email == "gettest@1234"
+
+def test_get_invalid_user(db, user_repo: SqlAlchemyUserRepository):
+    fetched_user = user_repo.get(db=db, user_id="non-existent-id")
+    assert fetched_user is None
