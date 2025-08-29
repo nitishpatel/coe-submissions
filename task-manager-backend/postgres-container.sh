@@ -16,15 +16,29 @@ set +a
 CONTAINER_NAME=task_manager_backend_db
 POSTGRES_IMAGE=postgres:15
 
+container_exists()   { docker ps -a --format '{{.Names}}' | grep -Fxq "$CONTAINER_NAME"; }
+container_running()  { docker ps --format '{{.Names}}'   | grep -Fxq "$CONTAINER_NAME"; }
+
+function create_container() {
+    echo "Creating PostgreSQL container: $CONTAINER_NAME"
+    docker create --name "$CONTAINER_NAME" \
+      -e POSTGRES_USER="$POSTGRES_USER" \
+      -e POSTGRES_PASSWORD="$POSTGRES_PASSWORD" \
+      -e POSTGRES_DB="$POSTGRES_DB" \
+      -p "$POSTGRES_PORT":5432 \
+      "$POSTGRES_IMAGE"
+}
+
 function start() {
   echo "Starting PostgreSQL container: $CONTAINER_NAME"
-  docker run -d \
-    --name "$CONTAINER_NAME" \
-    -e POSTGRES_USER="$POSTGRES_USER" \
-    -e POSTGRES_PASSWORD="$POSTGRES_PASSWORD" \
-    -e POSTGRES_DB="$POSTGRES_DB" \
-    -p "$POSTGRES_PORT":5432 \
-    "$POSTGRES_IMAGE"
+  if ! container_exists; then
+    create_container
+  fi
+  if ! container_running; then
+    docker start "$CONTAINER_NAME"
+  else
+    echo "Container $CONTAINER_NAME is already running."
+  fi
 }
 
 function stop() {
