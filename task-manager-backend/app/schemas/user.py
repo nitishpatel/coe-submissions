@@ -13,3 +13,12 @@ class UserSignUpRequest(BaseModel):
         if not re.search(r'[!@#$%^&*(),.?":{}|<>]', value):
             raise ValueError('Password must contain at least one special character')
         return value
+
+class UserRead(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+    id: str
+    email: EmailStr
+    full_name: str | None = None
+    is_active: bool
+    created_at: str
+    updated_at: str
