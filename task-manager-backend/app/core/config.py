@@ -12,6 +12,8 @@ class Config:
         self.postgres_db = os.getenv("POSTGRES_DB")
         self.postgres_port = os.getenv("POSTGRES_PORT")
         self.postgres_url = f"postgresql://{self.postgres_user}:{self.postgres_password}@localhost:{self.postgres_port}/{self.postgres_db}"
+        self.jwt_secret = os.getenv("JWT_SECRET")
+        self.jwt_algorithm = "HS256"
 
     @classmethod
     def get_instance(cls):
