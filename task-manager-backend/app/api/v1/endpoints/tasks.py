@@ -1,13 +1,13 @@
 from __future__ import annotations
 from fastapi import APIRouter, HTTPException, status, Depends
-from app.api.deps import DB
+from app.api.deps import DB,current_user
 from app.schemas.task import TaskCreate, TaskUpdate, TaskRead
 from app.services.task import TaskService
 
 router = APIRouter(tags=["tasks"])
 
 @router.post("", response_model=TaskRead, status_code=status.HTTP_201_CREATED)
-def create_task(payload: TaskCreate, db: DB):
+def create_task(payload: TaskCreate, db: DB,user=Depends(current_user)):
     return TaskService().create(db, payload)
 
 @router.get("/{task_id}", response_model=TaskRead)
