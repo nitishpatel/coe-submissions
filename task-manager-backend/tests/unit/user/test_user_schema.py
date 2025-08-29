@@ -34,3 +34,12 @@ def test_email_mandatory_field():
     errors = exc_info.value.errors()
     assert errors[0]["loc"] == ("email",)
     assert errors[0]["type"] == "missing"
+
+def test_full_name_non_mandatory_field():
+    user = UserSignUpRequest(
+        email="test@example.in",
+        password="StrongPassword123!"
+    )
+    assert user.email == "test@example.in"
+    assert user.full_name is None
+    assert user.password == "StrongPassword123!"
