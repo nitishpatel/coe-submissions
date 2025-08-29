@@ -63,3 +63,18 @@ def test_invalid_password(auth_service: AuthService, db):
     )
     response = auth_service.login(db, login_req)
     assert response is None
+
+def test_email_case_insensitivity(auth_service: AuthService, db):
+    email = "TEST@example.in"
+    password = "securepassword123!"
+    sign_up_req = UserSignUpRequest(
+        email=email,
+        password=password,
+    )
+    auth_service.signup(db, sign_up_req)
+    login_req = UserLoginRequest(
+        email="teST@Example.in",
+        password=password
+    )
+    response = auth_service.login(db, login_req)
+    assert isinstance(response, LoginResponse)
