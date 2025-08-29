@@ -53,7 +53,7 @@ def test_password_minimum_length():
         )
     errors = exc_info.value.errors()
     assert errors[0]["loc"] == ("password",)
-    assert errors[0]["type"] == "value_error.any_str.min_length"
+    assert errors[0]["type"] == "string_too_short"
 
 def test_password_maximum_length():
     long_password = "A" * 27
@@ -65,4 +65,4 @@ def test_password_maximum_length():
         )
     errors = exc_info.value.errors()
     assert errors[0]["loc"] == ("password",)
-    assert errors[0]["type"] == "value_error.any_str.max_length"
+    assert errors[0]["type"] == "string_too_long"
