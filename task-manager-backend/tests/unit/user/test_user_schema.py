@@ -2,7 +2,7 @@ import pytest
 from app.schemas.user import UserSignUpRequest
 
 def test_successful_user_signup():
-    user = UserSignUp(
+    user = UserSignUpRequest(
         email="test@example.in",
         full_name="Test User",
         password="StrongPassword123!"
