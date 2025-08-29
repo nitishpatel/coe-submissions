@@ -2,20 +2,21 @@ import bcrypt
 from typing import Protocol
 from dataclasses import dataclass
 from sqlalchemy.exc import IntegrityError
-from app.repositories.user import UserRepository,SqlAlchemyUserRepository
-from app.schemas.user import UserSignUpRequest,UserRead
+from app.repositories.user import UserRepository, SqlAlchemyUserRepository
+from app.schemas.user import UserSignUpRequest, UserRead
 from app.services.password import PasswordHasher, BcryptPasswordHasher
 
 
 class DuplicateEmailError(ValueError):
     pass
 
+
 @dataclass(slots=True)
 class AuthService:
-    repo:UserRepository
-    hasher:PasswordHasher
+    repo: UserRepository
+    hasher: PasswordHasher
 
-    def __init__(self, repo: UserRepository | None, hasher: PasswordHasher | None):
+    def __init__(self, repo: UserRepository | None = None, hasher: PasswordHasher | None = None):
         self.repo = repo or SqlAlchemyUserRepository()
         self.hasher = hasher or BcryptPasswordHasher()
 
