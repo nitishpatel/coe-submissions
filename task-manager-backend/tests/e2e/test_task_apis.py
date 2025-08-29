@@ -2,13 +2,15 @@ import pytest
 from app.schemas.task import TaskRead
 
 @pytest.fixture
-def make_task(client):
+def make_task(client,authenticated_user):
+    authenticated_user()
     def _make_task(title="Test Task", description="Test Description"):
         response = client.post("/api/v1/tasks", json={"title": title, "description": description})
         return response
     return _make_task
 
-def test_task_create_api(client, make_task):
+
+def test_task_create_api(client, make_task,):
     response = make_task()
     assert response.status_code == 201
     assert response.json()["title"] == "Test Task"

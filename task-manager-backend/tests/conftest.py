@@ -79,3 +79,17 @@ def client(db: Session) -> Generator[TestClient, None, None]:
             yield c
     finally:
         app.dependency_overrides.pop(get_db, None)
+
+@pytest.fixture
+def authenticated_user(client):
+    def _signup_and_login(email="test@example.in",password="securepassword123!"):
+        signup_response = client.post(
+            "/api/v1/auth/signup", json={"email": email, "full_name": "Test User", "password": password})
+        assert signup_response.status_code == 201
+
+        login_response = client.post("/api/v1/auth/login", json={"email": email, "password": password})
+        assert login_response.status_code == 200
+        token = login_response.json()["access_token"]
+        client.headers.update({"Authorization": f"Bearer {token}"})
+        return client
+    return _signup_and_login
