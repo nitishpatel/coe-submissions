@@ -43,3 +43,26 @@ def test_full_name_non_mandatory_field():
     assert user.email == "test@example.in"
     assert user.full_name is None
     assert user.password == "StrongPassword123!"
+
+def test_password_minimum_length():
+    with pytest.raises(ValidationError) as exc_info:
+        UserSignUpRequest(
+            email="test@example.in",
+            full_name="Test User",
+            password="123"
+        )
+    errors = exc_info.value.errors()
+    assert errors[0]["loc"] == ("password",)
+    assert errors[0]["type"] == "value_error.any_str.min_length"
+
+def test_password_maximum_length():
+    long_password = "A" * 27
+    with pytest.raises(ValidationError) as exc_info:
+        UserSignUpRequest(
+            email="test@example.in",
+            full_name="Test User",
+            password=long_password
+        )
+    errors = exc_info.value.errors()
+    assert errors[0]["loc"] == ("password",)
+    assert errors[0]["type"] == "value_error.any_str.max_length"
