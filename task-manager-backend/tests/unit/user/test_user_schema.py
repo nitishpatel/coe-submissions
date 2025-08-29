@@ -66,3 +66,15 @@ def test_password_maximum_length():
     errors = exc_info.value.errors()
     assert errors[0]["loc"] == ("password",)
     assert errors[0]["type"] == "string_too_long"
+
+def test_password_min_1_digit_and_special_character():
+    password = "Password"
+    with pytest.raises(ValidationError) as exc_info:
+        UserSignUpRequest(
+            email="test@example.com",
+            full_name="Test User",
+            password=password
+        )
+    errors = exc_info.value.errors()
+    assert errors[0]["loc"] == ("password",)
+    assert errors[0]["type"] == "value_error"
