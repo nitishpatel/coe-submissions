@@ -89,3 +89,13 @@ def test_task_list_pagination(authenticated_client, make_task):
     response = authenticated_client.get("/api/v1/tasks?page=2&limit=10")
     assert response.status_code == 200
     assert len(response.json()) == 5
+
+def test_task_list_pagination_invalid_params(authenticated_client):
+    response = authenticated_client.get("/api/v1/tasks?page=0&limit=10")
+    assert response.status_code == 422
+
+    response = authenticated_client.get("/api/v1/tasks?page=1&limit=0")
+    assert response.status_code == 422
+
+    response = authenticated_client.get("/api/v1/tasks?page=1&limit=101")
+    assert response.status_code == 422
