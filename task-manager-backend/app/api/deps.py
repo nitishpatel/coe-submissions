@@ -56,8 +56,7 @@ def current_user(
         )
     return user
 
-def pagination_params(
-        skip: int = Query(0, ge=0),
-        limit: int = Query(10, ge=1, le=100)
-    ) -> dict[str, int]:
+def pagination_params(page: int = Query(1, ge=1), page_size: int = Query(10, ge=1, le=100)):
+    skip = (page - 1) * page_size
+    limit = page_size
     return {"skip": skip, "limit": limit}
