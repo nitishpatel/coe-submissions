@@ -57,7 +57,6 @@ def current_user(
         )
     return user
 
-def pagination_params(page: int = Query(1, ge=1), page_size: int = Query(10, ge=1, le=100)) -> PaginationParams:
-    skip = (page - 1) * page_size
-    limit = page_size
+def pagination_params(page: int = Query(1, ge=1), limit: int = Query(10, ge=1, le=100)) -> PaginationParams:
+    skip = (page - 1) * limit
     return PaginationParams(offset=skip, limit=limit)
