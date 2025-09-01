@@ -3,6 +3,9 @@ from __future__ import annotations
 from typing import Protocol, Sequence
 from sqlalchemy.orm import Session
 from app.models.task import Task, TaskStatus
+from app.schemas.task import TaskFilter
+from sqlalchemy import asc, desc
+from app.schemas.common import SortOrder
 
 class TaskRepository(Protocol):
     def create(self, db: Session, *, title: str, description: str | None, status: TaskStatus) -> Task: ...
@@ -21,14 +24,18 @@ class SqlAlchemyTaskRepository:
     def get(self, db: Session, task_id: str) -> Task | None:
         return db.get(Task, task_id)
 
-    def list(self, db: Session, *, limit: int, offset: int):
-        return (
-            db.query(Task)
-            .order_by(Task.created_at.desc())
-            .offset(offset)
-            .limit(limit)
-            .all()
-        )
+    def list(self, db: Session, *, limit: int, offset: int, filters: TaskFilter | None = None):
+        query = db.query(Task)
+
+        if filters is not None:
+            if filters.status:
+                query = query.filter(Task.status == filters.status)
+        else:
+            # default sort if no filters
+            query = query.order_by(Task.created_at.desc())
+
+        return query.offset(offset).limit(limit).all()
+
 
     def update(self, db: Session, task: Task, *, title: str | None, description: str | None, status: TaskStatus | None) -> Task:
         if title is not None:
