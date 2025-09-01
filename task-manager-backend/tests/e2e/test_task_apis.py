@@ -172,7 +172,6 @@ def test_task_filter_by_date_range_to(authenticated_client, make_task,monkeypatc
     make_task(title="Task 4", description="Desc 4")
     yesterday = (date.today() - timedelta(days=1)).isoformat()
     response = authenticated_client.get(f"/api/v1/tasks?date_to={yesterday}")
-    print(response.json())
     assert response.status_code == 200
     assert len(response.json()) == 2
 
@@ -187,3 +186,14 @@ def test_task_filter_by_date_range_from_to(authenticated_client, make_task,monke
     response = authenticated_client.get(f"/api/v1/tasks?date_from={yesterday}&date_to={today}")
     assert response.status_code == 200
     assert len(response.json()) == 2
+
+def test_task_filter_by_invalid_date_range(authenticated_client):
+    response = authenticated_client.get("/api/v1/tasks?date_from=2023-13-01")
+    assert response.status_code == 422
+
+    response = authenticated_client.get("/api/v1/tasks?date_to=2023-01-32")
+    assert response.status_code == 422
+
+def test_task_filter_by_date_range_from_greater_than_to(authenticated_client):
+    response = authenticated_client.get("/api/v1/tasks?date_from=2023-01-10&date_to=2023-01-01")
+    assert response.status_code == 422
