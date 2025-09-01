@@ -222,3 +222,15 @@ def test_task_filter_combined(authenticated_client, make_task,monkeypatch,db):
     assert response.status_code == 200
     assert len(response.json()) == 1
     assert response.json()[0]['status'] == "in_progress"
+
+def test_task_sorting_by_created_at_asc(authenticated_client, make_task):
+    make_task(title="Task A", description="Desc A")
+    make_task(title="Task B", description="Desc B")
+    make_task(title="Task C", description="Desc C")
+
+    response = authenticated_client.get("/api/v1/tasks?sort_by=created_at&order=asc")
+    assert response.status_code == 200
+    tasks = response.json()
+    assert tasks[0]['title'] == "Task A"
+    assert tasks[1]['title'] == "Task B"
+    assert tasks[2]['title'] == "Task C"
