@@ -1,12 +1,36 @@
 from __future__ import annotations
-from fastapi import APIRouter, HTTPException, status, Depends
+from fastapi import APIRouter, HTTPException, status, Depends,Query
+from pydantic import BaseModel
+from datetime import date
+
 from app.api.deps import DB,current_user,pagination_params
-from app.schemas.task import TaskCreate, TaskUpdate, TaskRead
 from app.services.task import TaskService
-from app.schemas.common import PaginationParams
 from app.core.utils import get_or_404
+from app.schemas.task import TaskFilter,TaskSortBy,TaskStatus,TaskCreate, TaskUpdate, TaskRead
+from app.schemas.common import SortOrder,DateRange,PaginationParams
+
 
 router = APIRouter(tags=["tasks"])
+
+
+def task_filter_params(
+    task_status: TaskStatus | None = Query(None),
+    sort_by: TaskSortBy | None = Query(None),
+    order: SortOrder = Query(SortOrder.ASC),
+    date_from: date | None = Query(None, alias="date_from"),
+    date_to: date | None = Query(None, alias="date_to"),
+) -> TaskFilter:
+    date_range = None
+    if date_from or date_to:
+        date_range = DateRange(date_from=date_from, date_to=date_to)
+    return TaskFilter(
+        status=task_status,
+        sort_by=sort_by,
+        order=order,
+        date_range=date_range,
+    )
+
+
 
 def get_task_service() -> TaskService:
     return TaskService()
@@ -21,8 +45,8 @@ def get_task(task_id: str, db: DB,user=Depends(current_user),service: TaskServic
 
 
 @router.get("", response_model=list[TaskRead],)
-def list_tasks(db: DB,user=Depends(current_user),pagination:PaginationParams=Depends(pagination_params),service: TaskService = Depends(get_task_service)):
-    return service.list(db,limit=pagination.limit, offset=pagination.offset)
+def list_tasks(db: DB,user=Depends(current_user),pagination:PaginationParams=Depends(pagination_params),filters=Depends(task_filter_params),service: TaskService = Depends(get_task_service)):
+    return service.list(db,limit=pagination.limit, offset=pagination.offset,filters=filters)
 
 @router.patch("/{task_id}", response_model=TaskRead)
 def update_task(task_id: str, payload: TaskUpdate, db: DB,user=Depends(current_user),service: TaskService = Depends(get_task_service)):
