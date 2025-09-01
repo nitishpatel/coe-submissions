@@ -20,3 +20,8 @@ class SortOrder(str,Enum):
 class DateRange(BaseModel):
     date_from: date | None = None
     date_to: date | None = None
+
+    def is_valid(self) -> bool:
+        if self.date_from and self.date_to:
+            return self.date_from <= self.date_to
+        return True

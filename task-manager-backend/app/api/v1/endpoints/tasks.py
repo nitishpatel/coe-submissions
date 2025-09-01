@@ -1,5 +1,6 @@
 from __future__ import annotations
 from fastapi import APIRouter, HTTPException, status, Depends,Query
+from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 from datetime import date
 
@@ -46,6 +47,12 @@ def get_task(task_id: str, db: DB,user=Depends(current_user),service: TaskServic
 
 @router.get("", response_model=list[TaskRead],)
 def list_tasks(db: DB,user=Depends(current_user),pagination:PaginationParams=Depends(pagination_params),filters=Depends(task_filter_params),service: TaskService = Depends(get_task_service)):
+    if filters and filters.date_range:
+            if not filters.date_range.is_valid():
+                return JSONResponse(
+                    status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                    content={"detail": "Invalid date range: 'date_from' cannot be after 'date_to'."},
+                )
     return service.list(db,limit=pagination.limit, offset=pagination.offset,filters=filters)
 
 @router.patch("/{task_id}", response_model=TaskRead)
