@@ -93,3 +93,8 @@ def authenticated_user(client):
         client.headers.update({"Authorization": f"Bearer {token}"})
         return client
     return _signup_and_login
+
+@pytest.fixture
+def authenticated_client(client, authenticated_user):
+    authenticated_user()
+    return client
