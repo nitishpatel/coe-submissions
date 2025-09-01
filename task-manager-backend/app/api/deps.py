@@ -55,3 +55,9 @@ def current_user(
             headers={"WWW-Authenticate": "Bearer"},
         )
     return user
+
+def pagination_params(
+        skip: int = Query(0, ge=0),
+        limit: int = Query(10, ge=1, le=100)
+    ) -> dict[str, int]:
+    return {"skip": skip, "limit": limit}
