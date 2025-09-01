@@ -1,6 +1,6 @@
 from __future__ import annotations
 from sqlalchemy.orm import Session
-from app.schemas.task import TaskCreate, TaskUpdate, TaskRead
+from app.schemas.task import TaskCreate, TaskUpdate, TaskRead,TaskFilter
 from app.repositories.task import TaskRepository, SqlAlchemyTaskRepository
 from app.models.task import Task
 
@@ -16,8 +16,8 @@ class TaskService:
         t = self.repo.get(db, task_id)
         return TaskRead.model_validate(t) if t else None
 
-    def list(self, db: Session, limit: int = 20, offset: int = 0) -> list[TaskRead]:
-        tasks = self.repo.list(db, limit=limit, offset=offset)
+    def list(self, db: Session, limit: int = 20, offset: int = 0,filters = TaskFilter) -> list[TaskRead]:
+        tasks = self.repo.list(db, limit=limit, offset=offset,filters=filters)
         return [TaskRead.model_validate(t) for t in tasks]
 
     def update(self, db: Session, task_id: str, data: TaskUpdate) -> TaskRead | None:
