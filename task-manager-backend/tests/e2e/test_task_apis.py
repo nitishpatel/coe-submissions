@@ -124,3 +124,21 @@ def test_task_pagination_exact_limit(authenticated_client, make_task):
     response = authenticated_client.get("/api/v1/tasks?page=2&limit=10")
     assert response.status_code == 200
     assert response.json() == []
+
+def test_task_filter_by_status(authenticated_client, make_task):
+    make_task(title="Task 1", description="Desc 1")
+    make_task(title="Task 2", description="Desc 2")
+    tasks = authenticated_client.get("/api/v1/tasks").json()
+    task_id = tasks[0]['id']
+    authenticated_client.patch(f"/api/v1/tasks/{task_id}", json={"status": "IN_PROGRESS"})
+
+    response = authenticated_client.get("/api/v1/tasks?task_status=in_progress")
+    print(response.json())
+    assert response.status_code == 200
+    assert len(response.json()) == 1
+    assert response.json()[0]['status'] == "in_progress"
+
+    response = authenticated_client.get("/api/v1/tasks?task_status=todo")
+    assert response.status_code == 200
+    assert len(response.json()) == 1
+    assert response.json()[0]['status'] == "todo"
