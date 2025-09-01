@@ -130,7 +130,7 @@ def test_task_filter_by_status(authenticated_client, make_task):
     make_task(title="Task 2", description="Desc 2")
     tasks = authenticated_client.get("/api/v1/tasks").json()
     task_id = tasks[0]['id']
-    authenticated_client.patch(f"/api/v1/tasks/{task_id}", json={"status": "IN_PROGRESS"})
+    authenticated_client.patch(f"/api/v1/tasks/{task_id}", json={"status": "in_progress"})
 
     response = authenticated_client.get("/api/v1/tasks?task_status=in_progress")
     print(response.json())
