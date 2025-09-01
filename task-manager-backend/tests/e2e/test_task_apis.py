@@ -1,6 +1,6 @@
 import pytest
 from app.schemas.task import TaskRead
-from datetime import date,datetime
+from datetime import date,datetime,timedelta
 from app.models.task import Task
 
 @pytest.fixture
@@ -161,5 +161,29 @@ def test_task_filter_by_date_range_from(authenticated_client, make_task,monkeypa
     make_task(title="Task 4", description="Desc 4")
     today = date.today().isoformat()
     response = authenticated_client.get(f"/api/v1/tasks?date_from={today}")
+    assert response.status_code == 200
+    assert len(response.json()) == 2
+
+def test_task_filter_by_date_range_to(authenticated_client, make_task,monkeypatch,db):
+    make_task(title="Task 1", description="Desc 1")
+    make_task(title="Task 2", description="Desc 2")
+    db.query(Task).update({Task.created_at: FixedDatetime.utcnow()})
+    make_task(title="Task 3", description="Desc 3")
+    make_task(title="Task 4", description="Desc 4")
+    yesterday = (date.today() - timedelta(days=1)).isoformat()
+    response = authenticated_client.get(f"/api/v1/tasks?date_to={yesterday}")
+    print(response.json())
+    assert response.status_code == 200
+    assert len(response.json()) == 2
+
+def test_task_filter_by_date_range_from_to(authenticated_client, make_task,monkeypatch,db):
+    make_task(title="Task 1", description="Desc 1")
+    make_task(title="Task 2", description="Desc 2")
+    db.query(Task).update({Task.created_at: FixedDatetime.utcnow()})
+    make_task(title="Task 3", description="Desc 3")
+    make_task(title="Task 4", description="Desc 4")
+    yesterday = (date.today() - timedelta(days=1)).isoformat()
+    today = date.today().isoformat()
+    response = authenticated_client.get(f"/api/v1/tasks?date_from={yesterday}&date_to={today}")
     assert response.status_code == 200
     assert len(response.json()) == 2
