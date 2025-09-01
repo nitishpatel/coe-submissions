@@ -249,3 +249,37 @@ def test_task_sorting_by_created_at_desc(authenticated_client, make_task, db):
 
     response = authenticated_client.get("/api/v1/tasks?sort_by=created_at&order=desc")
     assert [t['title'] for t in response.json()] == ["Task C", "Task B", "Task A"]
+
+def test_task_sort_by_status_asc(authenticated_client, make_task):
+    t1 = make_task(title="Task A", description="Desc A").json()
+    t2 = make_task(title="Task B", description="Desc B").json()
+    t3 = make_task(title="Task C", description="Desc C").json()
+
+    authenticated_client.patch(f"/api/v1/tasks/{t1['id']}", json={"status": "done"})
+    authenticated_client.patch(f"/api/v1/tasks/{t2['id']}", json={"status": "todo"})
+    authenticated_client.patch(f"/api/v1/tasks/{t3['id']}", json={"status": "in_progress"})
+
+    response = authenticated_client.get("/api/v1/tasks?sort_by=status&order=asc")
+    assert response.status_code == 200
+    tasks = response.json()
+
+    statuses = [t["status"] for t in tasks]
+
+    assert statuses == ["done", "in_progress", "todo"]
+
+def test_task_sort_by_status_desc(authenticated_client,make_task):
+    t1 = make_task(title="Task A", description="Desc A").json()
+    t2 = make_task(title="Task B", description="Desc B").json()
+    t3 = make_task(title="Task C", description="Desc C").json()
+
+    authenticated_client.patch(f"/api/v1/tasks/{t1['id']}", json={"status": "done"})
+    authenticated_client.patch(f"/api/v1/tasks/{t2['id']}", json={"status": "todo"})
+    authenticated_client.patch(f"/api/v1/tasks/{t3['id']}", json={"status": "in_progress"})
+
+    response = authenticated_client.get("/api/v1/tasks?sort_by=status&order=desc")
+    assert response.status_code == 200
+    tasks = response.json()
+
+    statuses = [t["status"] for t in tasks]
+
+    assert statuses == ["todo","in_progress","done"]
