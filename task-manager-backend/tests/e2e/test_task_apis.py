@@ -142,3 +142,7 @@ def test_task_filter_by_status(authenticated_client, make_task):
     assert response.status_code == 200
     assert len(response.json()) == 1
     assert response.json()[0]['status'] == "todo"
+
+def test_task_filter_by_invalid_status(authenticated_client):
+    response = authenticated_client.get("/api/v1/tasks?task_status=invalid_status")
+    assert response.status_code == 422
