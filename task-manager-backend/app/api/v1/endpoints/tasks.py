@@ -1,6 +1,6 @@
 from __future__ import annotations
 from fastapi import APIRouter, HTTPException, status, Depends
-from app.api.deps import DB,current_user
+from app.api.deps import DB,current_user,pagination_params
 from app.schemas.task import TaskCreate, TaskUpdate, TaskRead
 from app.services.task import TaskService
 
@@ -18,8 +18,8 @@ def get_task(task_id: str, db: DB,user=Depends(current_user)):
     return t
 
 @router.get("", response_model=list[TaskRead])
-def list_tasks(db: DB,user=Depends(current_user)):
-    return TaskService().list(db)
+def list_tasks(db: DB,user=Depends(current_user),pagination=Depends(pagination_params)):
+    return TaskService().list(db,limit=pagination["limit"], offset=pagination["skip"])
 
 @router.patch("/{task_id}", response_model=TaskRead)
 def update_task(task_id: str, payload: TaskUpdate, db: DB,user=Depends(current_user)):

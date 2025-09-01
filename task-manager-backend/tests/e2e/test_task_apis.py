@@ -82,10 +82,10 @@ def test_task_list_pagination(authenticated_client, make_task):
     for i in range(15):
         make_task(title=f"Task {i}")
 
-    response = authenticated_client.get("/api/v1/tasks?page=0&limit=10")
+    response = authenticated_client.get("/api/v1/tasks?page=1&limit=10")
     assert response.status_code == 200
     assert len(response.json()) == 10
 
-    response = authenticated_client.get("/api/v1/tasks?page=1&limit=10")
+    response = authenticated_client.get("/api/v1/tasks?page=2&limit=10")
     assert response.status_code == 200
     assert len(response.json()) == 5
