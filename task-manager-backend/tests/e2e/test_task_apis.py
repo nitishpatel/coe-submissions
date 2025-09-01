@@ -99,3 +99,28 @@ def test_task_list_pagination_invalid_params(authenticated_client):
 
     response = authenticated_client.get("/api/v1/tasks?page=1&limit=101")
     assert response.status_code == 422
+
+def test_task_list_empty(authenticated_client):
+    response = authenticated_client.get("/api/v1/tasks?page=1&limit=10")
+    assert response.status_code == 200
+    assert response.json() == []
+
+def test_task_pagination_beyond_range(authenticated_client, make_task):
+    for i in range(5):
+        make_task(title=f"Task {i}")
+
+    response = authenticated_client.get("/api/v1/tasks?page=2&limit=10")
+    assert response.status_code == 200
+    assert response.json() == []
+
+def test_task_pagination_exact_limit(authenticated_client, make_task):
+    for i in range(10):
+        make_task(title=f"Task {i}")
+
+    response = authenticated_client.get("/api/v1/tasks?page=1&limit=10")
+    assert response.status_code == 200
+    assert len(response.json()) == 10
+
+    response = authenticated_client.get("/api/v1/tasks?page=2&limit=10")
+    assert response.status_code == 200
+    assert response.json() == []
