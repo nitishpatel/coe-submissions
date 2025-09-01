@@ -16,7 +16,7 @@ class TaskService:
         t = self.repo.get(db, task_id)
         return TaskRead.model_validate(t) if t else None
 
-    def list(self, db: Session, limit: int = 20, offset: int = 0,filters = TaskFilter) -> list[TaskRead]:
+    def list(self, db: Session, limit: int = 20, offset: int = 0,filters:TaskFilter|None=None) -> list[TaskRead]:
         tasks = self.repo.list(db, limit=limit, offset=offset,filters=filters)
         return [TaskRead.model_validate(t) for t in tasks]
 
