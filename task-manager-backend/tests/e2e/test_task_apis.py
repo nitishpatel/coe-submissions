@@ -62,3 +62,18 @@ def test_delete_invalid_task(authenticated_client):
     response = authenticated_client.delete("/api/v1/tasks/invalid_id")
     assert response.status_code == 404
 
+def test_task_create_unauthenticated(client):
+    response = client.post("/api/v1/tasks", json={"title": "Test Task", "description": "Test Description"})
+    assert response.status_code == 401
+
+def test_task_list_unauthenticated(client):
+    response = client.get("/api/v1/tasks")
+    assert response.status_code == 401
+
+def test_task_update_unauthenticated(client):
+    response = client.patch("/api/v1/tasks/some_id", json={"title": "Updated Task"})
+    assert response.status_code == 401
+
+def test_task_delete_unauthenticated(client):
+    response = client.delete("/api/v1/tasks/some_id")
+    assert response.status_code == 401
