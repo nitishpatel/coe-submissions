@@ -30,6 +30,10 @@ class SqlAlchemyTaskRepository:
         if filters is not None:
             if filters.status:
                 query = query.filter(Task.status == filters.status)
+            if filters.date_range:
+                if filters.date_range.date_from:
+                    query = query.filter(Task.created_at >= filters.date_range.date_from)
+
         else:
             # default sort if no filters
             query = query.order_by(Task.created_at.desc())
