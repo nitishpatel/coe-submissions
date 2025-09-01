@@ -197,3 +197,28 @@ def test_task_filter_by_invalid_date_range(authenticated_client):
 def test_task_filter_by_date_range_from_greater_than_to(authenticated_client):
     response = authenticated_client.get("/api/v1/tasks?date_from=2023-01-10&date_to=2023-01-01")
     assert response.status_code == 422
+
+
+def test_task_filter_combined(authenticated_client, make_task,monkeypatch,db):
+    make_task(title="Task 1", description="Desc 1")
+    make_task(title="Task 2", description="Desc 2")
+
+    tasks = authenticated_client.get("/api/v1/tasks").json()
+    task_id = tasks[0]['id']
+
+    authenticated_client.patch(f"/api/v1/tasks/{task_id}", json={"status": "in_progress"})
+
+    db.query(Task).filter(
+        Task.id == tasks[1]['id']
+    ).update({Task.created_at: FixedDatetime.utcnow()})
+
+    make_task(title="Task 3", description="Desc 3")
+    make_task(title="Task 4", description="Desc 4")
+
+    yesterday = (date.today() - timedelta(days=1)).isoformat()
+    today = date.today().isoformat()
+    response = authenticated_client.get(f"/api/v1/tasks?task_status=in_progress&date_from={yesterday}&date_to={today}")
+
+    assert response.status_code == 200
+    assert len(response.json()) == 1
+    assert response.json()[0]['status'] == "in_progress"
