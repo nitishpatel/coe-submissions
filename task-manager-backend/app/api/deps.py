@@ -5,6 +5,7 @@ from sqlalchemy.orm import Session
 from app.db.session import get_db
 from app.services.jwt import JWTService
 from app.repositories.user import SqlAlchemyUserRepository
+from app.schemas.common import PaginationParams
 
 DB = Annotated[Session, Depends(get_db)]
 
@@ -56,7 +57,7 @@ def current_user(
         )
     return user
 
-def pagination_params(page: int = Query(1, ge=1), page_size: int = Query(10, ge=1, le=100)):
+def pagination_params(page: int = Query(1, ge=1), page_size: int = Query(10, ge=1, le=100)) -> PaginationParams:
     skip = (page - 1) * page_size
     limit = page_size
-    return {"skip": skip, "limit": limit}
+    return PaginationParams(offset=skip, limit=limit)
