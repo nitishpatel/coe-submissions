@@ -1,5 +1,7 @@
 import pytest
 from app.schemas.task import TaskRead
+from datetime import date,datetime
+from app.models.task import Task
 
 @pytest.fixture
 def make_task(authenticated_client,):
@@ -133,7 +135,6 @@ def test_task_filter_by_status(authenticated_client, make_task):
     authenticated_client.patch(f"/api/v1/tasks/{task_id}", json={"status": "in_progress"})
 
     response = authenticated_client.get("/api/v1/tasks?task_status=in_progress")
-    print(response.json())
     assert response.status_code == 200
     assert len(response.json()) == 1
     assert response.json()[0]['status'] == "in_progress"
@@ -146,3 +147,19 @@ def test_task_filter_by_status(authenticated_client, make_task):
 def test_task_filter_by_invalid_status(authenticated_client):
     response = authenticated_client.get("/api/v1/tasks?task_status=invalid_status")
     assert response.status_code == 422
+
+class FixedDatetime(datetime):
+    @classmethod
+    def utcnow(cls):
+        return datetime(2023, 1, 1, 0, 0, 0)
+
+def test_task_filter_by_date_range_from(authenticated_client, make_task,monkeypatch,db):
+    make_task(title="Task 1", description="Desc 1")
+    make_task(title="Task 2", description="Desc 2")
+    db.query(Task).update({Task.created_at: FixedDatetime.utcnow()})
+    make_task(title="Task 3", description="Desc 3")
+    make_task(title="Task 4", description="Desc 4")
+    today = date.today().isoformat()
+    response = authenticated_client.get(f"/api/v1/tasks?date_from={today}")
+    assert response.status_code == 200
+    assert len(response.json()) == 2
