@@ -26,7 +26,6 @@ class TaskRead(TaskBase):
 
 class TaskSortBy(str, Enum):
     CREATED_AT = "created_at"
-    TITLE = "title"
     STATUS = "status"
 class TaskFilter(BaseModel):
     status: TaskStatus | None = None

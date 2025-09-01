@@ -38,7 +38,16 @@ class SqlAlchemyTaskRepository:
                 if filters.date_range.date_to:
                     end = datetime.combine(filters.date_range.date_to, time.max)
                     query = query.filter(Task.created_at <= end)
-
+            if filters.sort_by:
+                sort_map = {
+                    "created_at": Task.created_at,
+                    "status": Task.status,
+                }
+                sort_column = sort_map.get(filters.sort_by.value, Task.created_at)
+                sort_fn = desc if filters.order == SortOrder.DESC else asc
+                query = query.order_by(sort_fn(sort_column))
+            else:
+                query = query.order_by(Task.created_at.desc())
         else:
             # default sort if no filters
             query = query.order_by(Task.created_at.desc())
