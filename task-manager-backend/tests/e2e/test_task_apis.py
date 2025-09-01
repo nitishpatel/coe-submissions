@@ -2,6 +2,7 @@ import pytest
 from app.schemas.task import TaskRead
 from datetime import date,datetime,timedelta
 from app.models.task import Task
+import time
 
 @pytest.fixture
 def make_task(authenticated_client,):
@@ -234,3 +235,17 @@ def test_task_sorting_by_created_at_asc(authenticated_client, make_task):
     assert tasks[0]['title'] == "Task A"
     assert tasks[1]['title'] == "Task B"
     assert tasks[2]['title'] == "Task C"
+
+def test_task_sorting_by_created_at_desc(authenticated_client, make_task, db):
+    t1 = make_task(title="Task A").json()
+    t2 = make_task(title="Task B").json()
+    t3 = make_task(title="Task C").json()
+
+    base = datetime(2023, 1, 1)
+    db.query(Task).filter(Task.id == t1["id"]).update({"created_at": base})
+    db.query(Task).filter(Task.id == t2["id"]).update({"created_at": base + timedelta(seconds=1)})
+    db.query(Task).filter(Task.id == t3["id"]).update({"created_at": base + timedelta(seconds=2)})
+    db.commit()
+
+    response = authenticated_client.get("/api/v1/tasks?sort_by=created_at&order=desc")
+    assert [t['title'] for t in response.json()] == ["Task C", "Task B", "Task A"]
