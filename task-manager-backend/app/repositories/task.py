@@ -6,6 +6,7 @@ from app.models.task import Task, TaskStatus
 from app.schemas.task import TaskFilter
 from sqlalchemy import asc, desc
 from app.schemas.common import SortOrder
+from datetime import datetime,time
 
 class TaskRepository(Protocol):
     def create(self, db: Session, *, title: str, description: str | None, status: TaskStatus) -> Task: ...
@@ -32,7 +33,11 @@ class SqlAlchemyTaskRepository:
                 query = query.filter(Task.status == filters.status)
             if filters.date_range:
                 if filters.date_range.date_from:
-                    query = query.filter(Task.created_at >= filters.date_range.date_from)
+                    start = datetime.combine(filters.date_range.date_from, time.min)
+                    query = query.filter(Task.created_at >= start)
+                if filters.date_range.date_to:
+                    end = datetime.combine(filters.date_range.date_to, time.max)
+                    query = query.filter(Task.created_at <= end)
 
         else:
             # default sort if no filters
