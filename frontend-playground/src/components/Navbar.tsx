@@ -1,9 +1,13 @@
 import React from "react";
+import { useNavigate } from "react-router";
 
 const Navbar = () => {
+  const navigate = useNavigate();
   return (
     <nav className="flex items-center justify-between p-4 md:px-16 lg:px-24 xl:px-32 md:py-6 w-full">
-      <div className="flex items-center">
+      <button onClick={()=>{
+        navigate("/");
+      }} className="flex items-center">
         <svg
           width="100px"
           height="40px"
@@ -30,7 +34,7 @@ const Navbar = () => {
           />
         </svg>
         <h1 className="text-lg">CountPlusPlus</h1>
-      </div>
+      </button>
       <div
         id="menu"
         className="max-md:absolute max-md:top-0 max-md:left-0 max-md:w-0 max-md:transition-all max-md:duration-300 max-md:overflow-hidden max-md:h-full max-md:bg-white/50 max-md:backdrop-blur max-md:flex-col max-md:justify-center flex items-center gap-8 font-medium"
