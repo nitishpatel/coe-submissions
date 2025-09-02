@@ -1,6 +1,6 @@
 import React from "react";
 import { BrowserRouter, Route, Routes } from "react-router";
-import Home from "./pages/Home";
+import Counter from "./pages/Counter";
 import Hero from "./pages/Hero";
 import MainLayout from "./layout/MainLayout";
 
@@ -12,7 +12,7 @@ const App = () => {
           path="/counter"
           element={
             <MainLayout>
-              <Home />
+              <Counter />
             </MainLayout>
           }
         />

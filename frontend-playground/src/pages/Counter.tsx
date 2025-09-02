@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 
-const Home = () => {
+const Counter = () => {
   const [counter, setCounter] = useState<number>(() => {
     const saved: string | null = localStorage.getItem("counter");
     return saved ? parseInt(saved, 10) : 0;
@@ -30,4 +30,4 @@ const Home = () => {
   );
 };
 
-export default Home;
+export default Counter;

@@ -1,5 +1,5 @@
 import { fireEvent, render, screen } from "@testing-library/react";
-import Home from "./Home";
+import Counter from "./Counter";
 
 describe("Home component", () => {
   let unmountHome:()=>void;
@@ -10,7 +10,7 @@ describe("Home component", () => {
 
   beforeEach(()=>{
     localStorage.clear();
-    const {unmount} = render(<Home/>);
+    const {unmount} = render(<Counter/>);
     unmountHome = unmount;
   });
   it("renders the home page heading", () => {
@@ -32,8 +32,9 @@ describe("Home component", () => {
   });
 
   it("on reload should load state from localStorage",()=>{
+    unmountHome();
     localStorage.setItem("counter","10");
-    render(<Home/>);
+    render(<Counter/>);
     expect(screen.getByText(/Counter : 10/i)).toBeInTheDocument();
   });
 
@@ -44,7 +45,7 @@ describe("Home component", () => {
 
     expect(screen.getByText(/Counter : 1/i)).toBeInTheDocument();
     unmountHome();
-    render(<Home/>);
+    render(<Counter/>);
     expect(screen.getByText(/Counter : 1/i)).toBeInTheDocument();
   });
 });
