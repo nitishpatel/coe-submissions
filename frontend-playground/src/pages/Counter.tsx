@@ -11,6 +11,11 @@ const Counter = () => {
     setCounter(updatedCounter);
     localStorage.setItem("counter", updatedCounter.toString());
   };
+  const handleReset = () => {
+    const updatedCounter = 0;
+    setCounter(updatedCounter);
+    localStorage.setItem("counter", updatedCounter.toString());
+  }
 
   return (
     <div className="flex-1 flex flex-col justify-center items-center px-4">
@@ -29,7 +34,7 @@ const Counter = () => {
         </button>
         <button
           className="bg-orange-800 hover:bg-orange text-white px-6 py-3 rounded-full font-medium transition"
-          onClick={handleIncrement}
+          onClick={handleReset}
         >
           Reset
         </button>
