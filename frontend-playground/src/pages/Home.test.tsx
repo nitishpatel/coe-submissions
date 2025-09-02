@@ -25,4 +25,9 @@ describe("Home component", () => {
     }))
     expect(screen.getByText(/Counter : 1/i)).toBeInTheDocument();
   });
+
+  it("on reload should load state from localStorage",()=>{
+    localStorage.setItem("counter","10");
+    expect(screen.getByText(/Counter : 10/i)).toBeInTheDocument();
+  });
 });
