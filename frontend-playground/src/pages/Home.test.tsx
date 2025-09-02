@@ -8,14 +8,13 @@ describe("Home component", () => {
     fireEvent.click(screen.getByRole("button",{name:/increment/i}));
   };
 
-
   beforeEach(()=>{
     localStorage.clear();
     const {unmount} = render(<Home/>);
     unmountHome = unmount;
   });
   it("renders the home page heading", () => {
-    expect(screen.getByText(/Counter Home Page/i)).toBeInTheDocument();
+    expect(screen.getByText(/So what you counting?/i)).toBeInTheDocument();
   });
 
   it("should have an increment button",()=>{
