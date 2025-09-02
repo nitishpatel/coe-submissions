@@ -11,4 +11,9 @@ describe("Home component", () => {
     render(<Home/>);
     expect(screen.getByRole("button",{name:/increment/i})).toBeInTheDocument();
   })
+
+  it("should have an counter text",()=>{
+    render(<Home/>);
+    expect(screen.getByText(/Counter : 0/i)).toBeInTheDocument();
+  })
 });
