@@ -7,7 +7,9 @@ const Home = () => {
   });
 
   const handleIncrement = () => {
-    setCounter(counter + 1);
+    const updatedCounter:number = counter + 1;
+    setCounter(updatedCounter);
+    localStorage.setItem("counter",updatedCounter.toString());
   };
 
   return (
