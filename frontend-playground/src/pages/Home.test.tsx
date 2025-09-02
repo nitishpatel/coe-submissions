@@ -2,6 +2,9 @@ import { fireEvent, render, screen } from "@testing-library/react";
 import Home from "./Home";
 
 describe("Home component", () => {
+  beforeEach(()=>{
+    localStorage.clear();
+  });
   it("renders the home page heading", () => {
     render(<Home />);
     expect(screen.getByText(/Counter Home Page/i)).toBeInTheDocument();
@@ -30,5 +33,19 @@ describe("Home component", () => {
     localStorage.setItem("counter","10");
     render(<Home/>);
     expect(screen.getByText(/Counter : 10/i)).toBeInTheDocument();
+  });
+
+  it("should save the counter state in the localStorage",()=>{
+    const {unmount} = render(<Home/>);
+    expect(screen.getByText(/Counter : 0/i)).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("button",{
+      name:/increment/i
+    }))
+
+    expect(screen.getByText(/Counter : 1/i)).toBeInTheDocument();
+    unmount();
+    render(<Home/>);
+    expect(screen.getByText(/Counter : 1/i)).toBeInTheDocument();
   });
 });
