@@ -5,17 +5,21 @@ import { Router } from "react-router";
 import Navbar from "./Navbar";
 
 describe("Navbar", () => {
-  let history: MemoryHistory
-  beforeEach(()=>{
+  let history: MemoryHistory;
+  beforeEach(() => {
     localStorage.clear();
-    render(<Navbar/>);
     history = createMemoryHistory({ initialEntries: ["/counter"] });
+    render(
+      <Router location={history.location} navigator={history}>
+        <Navbar />
+      </Router>
+    );
   });
-  it("should have the project title",()=>{
+  it("should have the project title", () => {
     expect(screen.getByText(/CountPlusPlus/i)).toBeVisible();
   });
 
-  it("should navigate to / on click of Navbar Button",()=>{
+  it("should navigate to / on click of Navbar Button", () => {
     expect(history.location.pathname).toBe("/counter");
     fireEvent.click(screen.getByText(/CountPlusPlus/i));
     expect(history.location.pathname).toBe("/");
