@@ -48,4 +48,10 @@ describe("Home component", () => {
     render(<Counter/>);
     expect(screen.getByText(/Counter : 1/i)).toBeInTheDocument();
   });
+
+  it("should have an reset button",()=>{
+    expect(screen.getByRole("button",{
+      name:/Reset/i
+    })).toBeVisible();
+  })
 });
