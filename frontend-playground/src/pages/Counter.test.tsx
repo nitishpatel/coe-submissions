@@ -53,5 +53,16 @@ describe("Home component", () => {
     expect(screen.getByRole("button",{
       name:/Reset/i
     })).toBeVisible();
+  });
+
+  it("on click of reset button should change the counter to 0",()=>{
+    expect(screen.getByText(/Counter : 0/i)).toBeInTheDocument();
+    simulateIncrementButtonClick();
+    simulateIncrementButtonClick();
+    expect(screen.getByText(/Counter : 2/i)).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button",{
+      name:/Reset/i
+    }));
+    expect(screen.getByText(/Counter : 0/i)).toBeInTheDocument();
   })
 });
