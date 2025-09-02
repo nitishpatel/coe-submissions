@@ -5,17 +5,12 @@ const Counter = () => {
     const saved: string | null = localStorage.getItem("counter");
     return saved ? parseInt(saved, 10) : 0;
   });
-
   const handleIncrement = () => {
-    const updatedCounter: number = counter + 1;
-    setCounter(updatedCounter);
-    localStorage.setItem("counter", updatedCounter.toString());
+    handleCounterChange(setCounter, counter + 1);
   };
   const handleReset = () => {
-    const updatedCounter = 0;
-    setCounter(updatedCounter);
-    localStorage.setItem("counter", updatedCounter.toString());
-  }
+    handleCounterChange(setCounter,0);
+  };
 
   return (
     <div className="flex-1 flex flex-col justify-center items-center px-4">
@@ -44,3 +39,10 @@ const Counter = () => {
 };
 
 export default Counter;
+function handleCounterChange(
+  setCounter: React.Dispatch<React.SetStateAction<number>>,
+  updatedCounter: number
+) {
+  setCounter(updatedCounter);
+  localStorage.setItem("counter", updatedCounter.toString());
+}
