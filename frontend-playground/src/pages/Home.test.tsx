@@ -2,30 +2,33 @@ import { fireEvent, render, screen } from "@testing-library/react";
 import Home from "./Home";
 
 describe("Home component", () => {
+  let unmountHome:()=>void;
+
+  const simulateIncrementButtonClick = () => {
+    fireEvent.click(screen.getByRole("button",{name:/increment/i}));
+  };
+
+
   beforeEach(()=>{
     localStorage.clear();
+    const {unmount} = render(<Home/>);
+    unmountHome = unmount;
   });
   it("renders the home page heading", () => {
-    render(<Home />);
     expect(screen.getByText(/Counter Home Page/i)).toBeInTheDocument();
   });
 
   it("should have an increment button",()=>{
-    render(<Home/>);
     expect(screen.getByRole("button",{name:/increment/i})).toBeInTheDocument();
   })
 
   it("should have an counter text",()=>{
-    render(<Home/>);
     expect(screen.getByText(/Counter : 0/i)).toBeInTheDocument();
   })
 
   it("on click of increment button counter text should increase by 1",()=>{
-    render(<Home/>);
     expect(screen.getByText(/Counter : 0/i)).toBeInTheDocument();
-    fireEvent.click(screen.getByRole("button",{
-      name:/increment/i
-    }))
+    simulateIncrementButtonClick();
     expect(screen.getByText(/Counter : 1/i)).toBeInTheDocument();
   });
 
@@ -36,15 +39,12 @@ describe("Home component", () => {
   });
 
   it("should save the counter state in the localStorage",()=>{
-    const {unmount} = render(<Home/>);
     expect(screen.getByText(/Counter : 0/i)).toBeInTheDocument();
 
-    fireEvent.click(screen.getByRole("button",{
-      name:/increment/i
-    }))
+    simulateIncrementButtonClick();
 
     expect(screen.getByText(/Counter : 1/i)).toBeInTheDocument();
-    unmount();
+    unmountHome();
     render(<Home/>);
     expect(screen.getByText(/Counter : 1/i)).toBeInTheDocument();
   });
