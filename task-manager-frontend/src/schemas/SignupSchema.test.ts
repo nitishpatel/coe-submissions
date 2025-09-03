@@ -135,7 +135,7 @@ describe("Signup schema", () => {
         expect.arrayContaining([
           expect.objectContaining({
             path: ["confirmPassword"],
-            message: "Passwords do not match",
+            message: "Password do not match",
           }),
         ])
       );

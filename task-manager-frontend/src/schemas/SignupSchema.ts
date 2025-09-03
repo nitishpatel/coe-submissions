@@ -9,6 +9,11 @@ export const signupSchema = z
     .min(8, "Password must be between 8 and 26 characters")
     .max(26, "Password must be between 8 and 26 characters"),
     confirmPassword: z.string("Confirm Password is mandatory")
-  }).strict();
+  })
+  .refine((data)=>data.password === data.confirmPassword,{
+    path:["confirmPassword"],
+    message:"Password do not match"
+  })
+  .strict()
 
 export type SignupFormData = z.infer<typeof signupSchema>;
