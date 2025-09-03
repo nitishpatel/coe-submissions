@@ -6,7 +6,8 @@ export const signupSchema = z
     fullName: z.string().optional().nullable(),
     password: z
     .string("Password is mandatory")
-    .min(8, "Password must be between 8 and 26 characters"),
+    .min(8, "Password must be between 8 and 26 characters")
+    .max(26, "Password must be between 8 and 26 characters"),
     confirmPassword: z.string("Confirm Password is mandatory")
   }).strict();
 
