@@ -13,4 +13,7 @@ describe("Signup Page", () => {
       name:"signup-form"
     }))
   })
+  it("form should have an email id input field",()=>{
+    expect(screen.getByRole("textbox",{name:/email/i})).toBeInTheDocument();
+  })
 });
