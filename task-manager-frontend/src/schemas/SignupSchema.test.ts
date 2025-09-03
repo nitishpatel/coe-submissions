@@ -99,5 +99,24 @@ describe("Signup schema", () => {
         );
       }
     });
+    it("fails if password is greater than 26 characters", () => {
+      const result = signupSchema.safeParse({
+        ...validBaseUser,
+        password: "aaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      });
+
+      expect(result.success).toBe(false);
+
+      if (!result.success) {
+        expect(result.error.issues).toEqual(
+          expect.arrayContaining([
+            expect.objectContaining({
+              path: ["password"],
+              message: "Password must be between 8 and 26 characters",
+            }),
+          ])
+        );
+      }
+    });
   });
 });
