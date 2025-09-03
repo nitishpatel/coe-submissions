@@ -4,7 +4,7 @@ const Signup = () => {
   return (
     <div>
       <div>
-        <h1>Register</h1>
+        <h1>Register for Taskplusplus</h1>
       </div>
       <form aria-label="signup-form">
         <div>
@@ -23,6 +23,7 @@ const Signup = () => {
           <label htmlFor="confirm-password">Confirm Password</label>
           <input type="password" id="confirm-password" name="confirm-password" />
         </div>
+        <button>Register</button>
       </form>
     </div>
   );
