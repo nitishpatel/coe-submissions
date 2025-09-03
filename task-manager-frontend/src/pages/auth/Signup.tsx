@@ -32,6 +32,7 @@ const Signup = () => {
                 placeholder="Enter email"
                 {...register("email")}
               />
+              {errors.email && <span className="text-red-500">{errors.email.message}</span>}
             </div>
             <div>
               <label htmlFor="full-name" className="text-slate-900 text-sm font-medium mb-2 block">
@@ -44,6 +45,7 @@ const Signup = () => {
                 placeholder="Enter Full name"
                 {...register("fullName")}
               />
+              {errors.fullName && <span className="text-red-500">{errors.fullName.message}</span>}
             </div>
             <div>
               <label htmlFor="password" className="text-slate-900 text-sm font-medium mb-2 block">
@@ -56,6 +58,7 @@ const Signup = () => {
                 placeholder="Enter password"
                 {...register("password")}
               />
+              {errors.password && <span className="text-red-500">{errors.password.message}</span>}
             </div>
             <div>
               <label htmlFor="confirm-password" className="text-slate-900 text-sm font-medium mb-2 block">
@@ -68,6 +71,7 @@ const Signup = () => {
                 placeholder="Enter confirm password"
                 {...register("confirmPassword")}
               />
+              {errors.confirmPassword && <span className="text-red-500">{errors.confirmPassword.message}</span>}
             </div>
           </div>
 

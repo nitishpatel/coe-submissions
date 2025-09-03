@@ -42,7 +42,7 @@ describe("Signup Page", () => {
       })
     ).toBeVisible();
   });
-  describe("Signup form UI validation", () => {
+  describe("Signup form on submit validations", () => {
     it("shows error messages when submitting an empty form", async () => {
       await fireEvent.click(screen.getByRole("button", { name: /register/i }));
       expect(await screen.findByText(/Invalid email/i)).toBeInTheDocument();
