@@ -2,14 +2,17 @@ import React from "react";
 import { useForm } from "react-hook-form";
 import { signupSchema, type SignupFormData } from "../../schemas/SignupSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { authService } from "../../services/authService";
 
 const Signup = () => {
   const {register,handleSubmit,formState:{errors}} = useForm<SignupFormData>({
     resolver:zodResolver(signupSchema)
   });
 
-  const onSubmit = (data:SignupFormData)=>{
+  const onSubmit = async (data:SignupFormData)=>{
     console.log("Sign up form data",data);
+    const response = await authService.register(data);
+    console.log("🚀 ~ onSubmit ~ response:", response)
   }
 
   return (
