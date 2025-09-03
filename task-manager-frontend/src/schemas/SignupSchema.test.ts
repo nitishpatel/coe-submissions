@@ -56,4 +56,23 @@ describe("Signup schema", () => {
     });
     expect(result.success).toBe(true);
   });
+
+  it("fails if confirm password is missing", () => {
+    const result = signupSchema.safeParse({
+      ...validBaseUser
+    });
+
+    expect(result.success).toBe(false);
+
+    if (!result.success) {
+      expect(result.error.issues).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            path: ["confirmPassword"],
+            message: "Confirm Password is mandatory",
+          }),
+        ])
+      );
+    }
+  });
 });
