@@ -79,6 +79,7 @@ describe("Signup schema", () => {
     }
   });
 
+
   describe("password schema validations", () => {
     it("fails if password is shorter than 8 characters", () => {
       const result = signupSchema.safeParse({
@@ -119,4 +120,25 @@ describe("Signup schema", () => {
       }
     });
   });
+
+  it("should fail if confirm password and password does not match", () => {
+    const result = signupSchema.safeParse({
+      email:validBaseUser.email,
+      password: validBaseUser.password,
+      confirmPassword: "someotherpassword",
+    });
+
+    expect(result.success).toBe(false);
+
+    if (!result.success) {
+      expect(result.error.issues).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            path: ["confirmPassword"],
+            message: "Passwords do not match",
+          }),
+        ])
+      );
+    }
+  })
 });
