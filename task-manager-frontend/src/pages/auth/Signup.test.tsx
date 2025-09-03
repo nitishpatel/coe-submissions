@@ -6,7 +6,7 @@ describe("Signup Page", () => {
     render(<Signup/>);
   });
   it("renders the signup page heading", () => {
-    expect(screen.getByText(/Register/i)).toBeInTheDocument();
+    expect(screen.getByText(/register for taskplusplus/i)).toBeInTheDocument();
   });
   it("should have an form",()=>{
     expect(screen.getByRole("form",{
