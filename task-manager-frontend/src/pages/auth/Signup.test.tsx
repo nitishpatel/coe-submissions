@@ -20,9 +20,9 @@ describe("Signup Page", () => {
     expect(screen.getByRole("textbox",{name:/Full Name/i})).toBeInTheDocument();
   })
   it("form should have an password field",()=>{
-    expect(screen.getByLabelText(/password/i)).toHaveAttribute("type", "password");
+    expect(screen.getByLabelText(/^password$/i)).toHaveAttribute("type", "password");
   })
-  it("form should have an password field",()=>{
+  it("form should have an confirm password field",()=>{
     expect(screen.getByLabelText(/confirm password/i)).toHaveAttribute("type", "password");
   })
 });

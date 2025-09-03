@@ -19,6 +19,10 @@ const Signup = () => {
           <label htmlFor="password">Password</label>
           <input type="password" id="password" name="password" />
         </div>
+        <div>
+          <label htmlFor="confirm-password">Confirm Password</label>
+          <input type="password" id="confirm-password" name="confirm-password" />
+        </div>
       </form>
     </div>
   );
