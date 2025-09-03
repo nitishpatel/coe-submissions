@@ -17,6 +17,6 @@ describe("Signup Page", () => {
     expect(screen.getByRole("textbox",{name:/email/i})).toBeInTheDocument();
   })
   it("form should have an full name field",()=>{
-    expect(screen.getByRole("textbox",{name:/full-name/i})).toBeInTheDocument();
+    expect(screen.getByRole("textbox",{name:/Full Name/i})).toBeInTheDocument();
   })
 });
