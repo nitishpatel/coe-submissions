@@ -18,4 +18,10 @@ describe("Signup schema",()=>{
     });
     expect(result.success).toBe(true);
   });
+  it("fails if password is missing",()=>{
+    const result = signupSchema.safeParse({
+      email:"test@example.in"
+    });
+    expect(result.success).toBe(false);
+  });
 });
