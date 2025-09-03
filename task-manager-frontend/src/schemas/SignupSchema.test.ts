@@ -4,7 +4,7 @@ import { signupSchema } from "./SignupSchema";
 const validBaseUser = {
   email: "test@example.in",
   password: "Test@123",
-  confirmPassword:"Test@123"
+  confirmPassword: "Test@123"
 };
 
 describe("Signup schema", () => {
@@ -61,8 +61,8 @@ describe("Signup schema", () => {
 
   it("fails if confirm password is missing", () => {
     const result = signupSchema.safeParse({
-      email:validBaseUser.email,
-      password:validBaseUser.password
+      email: validBaseUser.email,
+      password: validBaseUser.password
     });
 
     expect(result.success).toBe(false);
@@ -77,5 +77,27 @@ describe("Signup schema", () => {
         ])
       );
     }
+  });
+
+  describe("password schema validations", () => {
+    it("fails if password is shorter than 8 characters", () => {
+      const result = signupSchema.safeParse({
+        ...validBaseUser,
+        password: "short1",
+      });
+
+      expect(result.success).toBe(false);
+
+      if (!result.success) {
+        expect(result.error.issues).toEqual(
+          expect.arrayContaining([
+            expect.objectContaining({
+              path: ["password"],
+              message: "Password must be between 8 and 26 characters",
+            }),
+          ])
+        );
+      }
+    });
   });
 });
