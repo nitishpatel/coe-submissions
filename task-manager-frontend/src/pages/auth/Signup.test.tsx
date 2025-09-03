@@ -16,4 +16,7 @@ describe("Signup Page", () => {
   it("form should have an email id input field",()=>{
     expect(screen.getByRole("textbox",{name:/email/i})).toBeInTheDocument();
   })
+  it("form should have an full name field",()=>{
+    expect(screen.getByRole("textbox",{name:/full-name/i})).toBeInTheDocument();
+  })
 });
