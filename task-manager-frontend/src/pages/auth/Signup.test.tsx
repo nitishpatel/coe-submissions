@@ -25,4 +25,9 @@ describe("Signup Page", () => {
   it("form should have an confirm password field",()=>{
     expect(screen.getByLabelText(/confirm password/i)).toHaveAttribute("type", "password");
   })
+  it("form should have an register button",()=>{
+    expect(screen.getByRole("button",{
+      name:/Register/i
+    })).toBeVisible()
+  })
 });
