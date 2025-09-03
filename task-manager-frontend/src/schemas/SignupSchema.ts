@@ -4,7 +4,8 @@ export const signupSchema = z
   .object({
     email: z.email("Invalid email"),
     fullName:z.string().optional().nullable(),
-    password:z.string("Password is mandatory")
+    password:z.string("Password is mandatory"),
+    confirmPassword:z.string("Confirm Password is mandatory")
   }).strict();
 
 export type SignupFormData = z.infer<typeof signupSchema>;

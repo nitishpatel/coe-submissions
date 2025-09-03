@@ -1,8 +1,10 @@
+import { email } from "zod";
 import { signupSchema } from "./SignupSchema";
 
 const validBaseUser = {
   email: "test@example.in",
   password: "Test@123",
+  confirmPassword:"Test@123"
 };
 
 describe("Signup schema", () => {
@@ -59,7 +61,8 @@ describe("Signup schema", () => {
 
   it("fails if confirm password is missing", () => {
     const result = signupSchema.safeParse({
-      ...validBaseUser
+      email:validBaseUser.email,
+      password:validBaseUser.password
     });
 
     expect(result.success).toBe(false);
