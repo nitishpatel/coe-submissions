@@ -9,6 +9,7 @@ export const signupSchema = z
     .min(8, "Password must be between 8 and 26 characters")
     .max(26, "Password must be between 8 and 26 characters"),
     confirmPassword: z.string("Confirm Password is mandatory")
+    .min(1,"Confirm Password is mandatory")
   })
   .refine((data)=>data.password === data.confirmPassword,{
     path:["confirmPassword"],
