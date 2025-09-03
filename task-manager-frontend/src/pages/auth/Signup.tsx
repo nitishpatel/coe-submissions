@@ -1,6 +1,17 @@
 import React from "react";
+import { useForm } from "react-hook-form";
+import { signupSchema, type SignupFormData } from "../../schemas/SignupSchema";
+import { zodResolver } from "@hookform/resolvers/zod";
 
 const Signup = () => {
+  const {register,handleSubmit,formState:{errors}} = useForm<SignupFormData>({
+    resolver:zodResolver(signupSchema)
+  });
+
+  const onSubmit = (data:SignupFormData)=>{
+    console.log("Sign up form data",data);
+  }
+
   return (
     <div className="flex flex-col justify-center sm:h-screen p-4">
       <div className="max-w-md w-full mx-auto border border-gray-300 rounded-2xl p-8">
@@ -8,7 +19,7 @@ const Signup = () => {
           <a href="javascript:void(0)">Register for TaskPlusPlus</a>
         </div>
 
-        <form aria-label="signup-form">
+        <form aria-label="signup-form" onSubmit={handleSubmit(onSubmit)}>
           <div className="space-y-6">
             <div>
               <label htmlFor="email" className="text-slate-900 text-sm font-medium mb-2 block">
@@ -16,10 +27,10 @@ const Signup = () => {
               </label>
               <input
                 id="email"
-                name="email"
                 type="email"
                 className="text-slate-900 bg-white border border-gray-300 w-full text-sm px-4 py-3 rounded-md outline-blue-500"
                 placeholder="Enter email"
+                {...register("email")}
               />
             </div>
             <div>
@@ -27,11 +38,11 @@ const Signup = () => {
                 Full Name
               </label>
               <input
-                name="full-name"
                 id="full-name"
                 type="text"
                 className="text-slate-900 bg-white border border-gray-300 w-full text-sm px-4 py-3 rounded-md outline-blue-500"
                 placeholder="Enter Full name"
+                {...register("fullName")}
               />
             </div>
             <div>
@@ -40,10 +51,10 @@ const Signup = () => {
               </label>
               <input
                 id="password"
-                name="password"
                 type="password"
                 className="text-slate-900 bg-white border border-gray-300 w-full text-sm px-4 py-3 rounded-md outline-blue-500"
                 placeholder="Enter password"
+                {...register("password")}
               />
             </div>
             <div>
@@ -52,17 +63,17 @@ const Signup = () => {
               </label>
               <input
                 id="confirm-password"
-                name="confirm-password"
                 type="password"
                 className="text-slate-900 bg-white border border-gray-300 w-full text-sm px-4 py-3 rounded-md outline-blue-500"
                 placeholder="Enter confirm password"
+                {...register("confirmPassword")}
               />
             </div>
           </div>
 
           <div className="mt-12">
             <button
-              type="button"
+              type="submit"
               className="w-full py-3 px-4 text-sm tracking-wider font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none cursor-pointer"
             >
               Register
