@@ -53,9 +53,8 @@ describe("Login Page", () => {
     it("calls authService.register with form data", async () => {
       unmountlogin();
       const mockLogin = vi.mocked(authService.login);
-      mockRegister.mockResolvedValueOnce({
-        access_token:
-          "dummy_jwt_token",
+      mockLogin.mockResolvedValueOnce({
+        access_token: "dummy_jwt_token",
         token_type: "bearer",
         user: {
           id: "2bab6bc1-b938-4867-99f4-3761db08d8b9",
