@@ -1,6 +1,17 @@
+import { zodResolver } from "@hookform/resolvers/zod";
 import React from "react";
+import { useForm } from "react-hook-form";
+import {type LoginFormData, loginSchema } from "../../schemas/LoginSchema";
 
 const Login = () => {
+  const {register,handleSubmit,formState:{errors}} = useForm<LoginFormData>({
+    resolver:zodResolver(loginSchema)
+  });
+
+  const onSubmit = (data:LoginFormData) => {
+    console.log("Login Form Data",data);
+  };
+
   return (
     <div className="flex flex-col justify-center sm:h-screen p-4">
       <div className="max-w-md w-full mx-auto border border-gray-300 rounded-2xl p-8">
@@ -8,7 +19,7 @@ const Login = () => {
           <a href="javascript:void(0)">Login to TaskPlusPlus</a>
         </div>
 
-        <form aria-label="login-form">
+        <form aria-label="login-form" onSubmit={handleSubmit(onSubmit)}>
           <div className="space-y-6">
             <div>
               <label
@@ -22,7 +33,9 @@ const Login = () => {
                 type="email"
                 className="text-slate-900 bg-white border border-gray-300 w-full text-sm px-4 py-3 rounded-md outline-blue-500"
                 placeholder="Enter email"
+                {...register("email")}
               />
+              {errors.email && <span className="text-red-500">{errors.email.message}</span>}
             </div>
             <div>
               <label
@@ -36,7 +49,9 @@ const Login = () => {
                 type="password"
                 className="text-slate-900 bg-white border border-gray-300 w-full text-sm px-4 py-3 rounded-md outline-blue-500"
                 placeholder="Enter password"
+                {...register("password")}
               />
+              {errors.password && <span className="text-red-500">{errors.password.message}</span>}
             </div>
           </div>
 
