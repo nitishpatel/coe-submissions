@@ -33,3 +33,5 @@ export const useAuthStore = create<Store>()(
     }
   )
 );
+
+export const useIsAuthenticated = () => useAuthStore((s)=>s.isAuthenticated);
