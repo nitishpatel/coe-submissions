@@ -26,7 +26,7 @@ const Login = () => {
 
   return (
     <div className="flex flex-col justify-center sm:h-screen p-4">
-      <div className="max-w-md w-full mx-auto border border-gray-300 rounded-2xl p-8">
+      <div className="max-w-md w-full mx-auto border bg-gray-100 border-gray-300 rounded-2xl p-8">
         <div className="text-center mb-12">
           <a href="javascript:void(0)">Login to TaskPlusPlus</a>
         </div>
@@ -75,6 +75,17 @@ const Login = () => {
               Login
             </button>
           </div>
+          <p className="text-slate-600 text-sm mt-6 text-center">
+            Dont have an account?{" "}
+            <a
+              onClick={()=>{
+                navigate("/signup");
+              }}
+              className="text-blue-600 font-medium hover:underline ml-1"
+            >
+              Register
+            </a>
+          </p>
         </form>
       </div>
     </div>
