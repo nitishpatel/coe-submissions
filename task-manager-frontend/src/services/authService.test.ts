@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { authService } from "./authService";
-import type { LoginResponse, User } from "../types/user";
+import { loginResponseMock } from "../mocks/loginResponse.mock";
 
 const hoisted = vi.hoisted(() => ({
   axiosInstance: {
@@ -23,20 +23,7 @@ vi.mock("axios", () => {
   };
 });
 
-const mockUser: User = {
-  id: "1f606822-ef78-47ab-9116-6e3dfaa935a9",
-  email: "test@example.in",
-  full_name: null,
-  is_active: true,
-  created_at: "2025-09-03T11:56:20.713998",
-  updated_at: "2025-09-03T11:56:20.713998",
-};
 
-const mockLoginResponse: LoginResponse = {
-  "access_token": "dummy_jwt_token",
-  "token_type": "bearer",
-  "user": mockUser
-};
 
 beforeEach(() => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -50,7 +37,7 @@ beforeEach(() => {
 describe("authService", () => {
   it("returns a user object on successful signup", async () => {
 
-    hoisted.axiosInstance.post.mockResolvedValueOnce({ data: mockUser });
+    hoisted.axiosInstance.post.mockResolvedValueOnce({ data: loginResponseMock.user });
 
     const result = await authService.register({
       email: "test@example.in",
@@ -67,10 +54,10 @@ describe("authService", () => {
       }),
       undefined
     );
-    expect(result).toEqual(mockUser);
+    expect(result).toEqual(loginResponseMock.user);
   });
   it("returns a user object on successful login", async () => {
-    hoisted.axiosInstance.post.mockResolvedValueOnce({ data: mockLoginResponse });
+    hoisted.axiosInstance.post.mockResolvedValueOnce({ data: loginResponseMock });
 
     const result = await authService.login({
       email: "test@example.in",
@@ -85,6 +72,6 @@ describe("authService", () => {
       }),
       undefined
     );
-    expect(result).toEqual(mockLoginResponse);
+    expect(result).toEqual(loginResponseMock);
   });
 });
