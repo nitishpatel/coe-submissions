@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { authService } from "./authService";
-import type { User } from "../types/user";
+import type { LoginResponse, User } from "../types/user";
 
 const hoisted = vi.hoisted(() => ({
   axiosInstance: {
@@ -23,6 +23,21 @@ vi.mock("axios", () => {
   };
 });
 
+const mockUser: User = {
+  id: "1f606822-ef78-47ab-9116-6e3dfaa935a9",
+  email: "test@example.in",
+  full_name: null,
+  is_active: true,
+  created_at: "2025-09-03T11:56:20.713998",
+  updated_at: "2025-09-03T11:56:20.713998",
+};
+
+const mockLoginResponse: LoginResponse = {
+  "access_token": "dummy_jwt_token",
+  "token_type": "bearer",
+  "user": mockUser
+};
+
 beforeEach(() => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   Object.values(hoisted.axiosInstance).forEach((v: any) => {
@@ -34,14 +49,6 @@ beforeEach(() => {
 
 describe("authService", () => {
   it("returns a user object on successful signup", async () => {
-    const mockUser: User = {
-      id: "1f606822-ef78-47ab-9116-6e3dfaa935a9",
-      email: "test@example.in",
-      full_name: null,
-      is_active: true,
-      created_at: "2025-09-03T11:56:20.713998",
-      updated_at: "2025-09-03T11:56:20.713998",
-    };
 
     hoisted.axiosInstance.post.mockResolvedValueOnce({ data: mockUser });
 
@@ -61,5 +68,23 @@ describe("authService", () => {
       undefined
     );
     expect(result).toEqual(mockUser);
+  });
+  it("returns a user object on successful login", async () => {
+    hoisted.axiosInstance.post.mockResolvedValueOnce({ data: mockLoginResponse });
+
+    const result = await authService.login({
+      email: "test@example.in",
+      password: "Test@123",
+    });
+
+    expect(hoisted.axiosInstance.post).toHaveBeenCalledWith(
+      "/auth/login",
+      expect.objectContaining({
+        email: "test@example.in",
+        password: "Test@123",
+      }),
+      undefined
+    );
+    expect(result).toEqual(mockLoginResponse);
   });
 });
