@@ -4,17 +4,20 @@ import { useForm } from "react-hook-form";
 import {type LoginFormData, loginSchema } from "../../schemas/LoginSchema";
 import { authService } from "../../services/authService";
 import toast from "react-hot-toast";
+import { useNavigate } from "react-router";
 
 const Login = () => {
   const {register,handleSubmit,formState:{errors},reset} = useForm<LoginFormData>({
     resolver:zodResolver(loginSchema)
   });
+  const navigate = useNavigate();
 
   const onSubmit = async (data:LoginFormData) => {
     const result = await authService.login(data)
     if(result){
       reset();
       toast.success("Login Successfull")
+      navigate("/task-list");
     }
   };
 
