@@ -5,7 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { authService } from "../../services/authService";
 
 const Signup = () => {
-  const {register,handleSubmit,formState:{errors}} = useForm<SignupFormData>({
+  const {register,handleSubmit,formState:{errors},reset} = useForm<SignupFormData>({
     resolver:zodResolver(signupSchema)
   });
 
@@ -13,6 +13,9 @@ const Signup = () => {
     console.log("Sign up form data",data);
     const response = await authService.register(data);
     console.log("🚀 ~ onSubmit ~ response:", response)
+    if(response){
+      reset();
+    }
   }
 
   return (

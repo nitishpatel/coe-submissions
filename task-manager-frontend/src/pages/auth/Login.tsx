@@ -5,14 +5,15 @@ import {type LoginFormData, loginSchema } from "../../schemas/LoginSchema";
 import { authService } from "../../services/authService";
 
 const Login = () => {
-  const {register,handleSubmit,formState:{errors}} = useForm<LoginFormData>({
+  const {register,handleSubmit,formState:{errors},reset} = useForm<LoginFormData>({
     resolver:zodResolver(loginSchema)
   });
 
   const onSubmit = async (data:LoginFormData) => {
-    console.log("Login Form Data",data);
     const result = await authService.login(data)
-    console.log(result)
+    if(result){
+      reset();
+    }
   };
 
   return (
