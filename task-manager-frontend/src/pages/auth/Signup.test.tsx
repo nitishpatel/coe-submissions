@@ -1,6 +1,9 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import Signup from "./Signup";
 import { authService } from "../../services/authService";
+import { MemoryRouter, Router } from "react-router";
+import type { ReactNode } from "react";
+import { createMemoryHistory, type MemoryHistory } from "history";
 
 vi.mock("../../services/authService", () => ({
   authService: {
@@ -9,10 +12,16 @@ vi.mock("../../services/authService", () => ({
 }));
 
 describe("Signup Page", () => {
-  let unmountSignup: () => void;
+  let reRenderSignup: (ui: ReactNode) => void;
+  let history: MemoryHistory;
   beforeEach(() => {
-    const { unmount } = render(<Signup />);
-    unmountSignup = unmount;
+    history = createMemoryHistory({ initialEntries: ["/register"] });
+    const { rerender } = render(
+      <Router location={history.location} navigator={history}>
+        <Signup />
+      </Router>
+    );
+    reRenderSignup = rerender;
   });
   it("renders the signup page heading", () => {
     expect(screen.getByText(/register for taskplusplus/i)).toBeInTheDocument();
@@ -65,7 +74,6 @@ describe("Signup Page", () => {
   });
   describe("Signup form integration", () => {
     it("calls authService.register with form data", async () => {
-      unmountSignup();
       const mockRegister = vi.mocked(authService.register);
       mockRegister.mockResolvedValueOnce({
         id: "1f606822-ef78-47ab-9116-6e3dfaa935a9",
@@ -75,7 +83,11 @@ describe("Signup Page", () => {
         created_at: "2025-09-03T11:56:20.713998",
         updated_at: "2025-09-03T11:56:20.713998",
       });
-      render(<Signup />);
+      reRenderSignup(
+        <Router location={history.location} navigator={history}>
+          <Signup />
+        </Router>
+      );
       fireEvent.input(screen.getByPlaceholderText(/email/i), {
         target: { value: "test@example.in" },
       });
@@ -97,6 +109,34 @@ describe("Signup Page", () => {
           })
         );
       });
+    });
+    it("redirects to login page on successfully form submission", async () => {
+      const mockRegister = vi.mocked(authService.register);
+      mockRegister.mockResolvedValueOnce({
+        id: "1f606822-ef78-47ab-9116-6e3dfaa935a9",
+        email: "test@example.in",
+        full_name: null,
+        is_active: true,
+        created_at: "2025-09-03T11:56:20.713998",
+        updated_at: "2025-09-03T11:56:20.713998",
+      });
+      reRenderSignup(
+        <Router location={history.location} navigator={history}>
+          <Signup />
+        </Router>
+      );
+      fireEvent.input(screen.getByPlaceholderText(/email/i), {
+        target: { value: "test@example.in" },
+      });
+      fireEvent.input(screen.getByLabelText(/^password$/i), {
+        target: { value: "Test@123" },
+      });
+      fireEvent.input(screen.getByLabelText(/confirm password/i), {
+        target: { value: "Test@123" },
+      });
+      expect(history.location.pathname).toBe("/register");
+      await fireEvent.click(screen.getByRole("button", { name: /register/i }));
+      await waitFor(() => expect(history.location.pathname).toBe("/login"));
     });
   });
 });
