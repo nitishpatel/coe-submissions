@@ -5,12 +5,14 @@ import {type LoginFormData, loginSchema } from "../../schemas/LoginSchema";
 import { authService } from "../../services/authService";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router";
+import { useAuthStore } from "../../store/authStore";
 
 const Login = () => {
   const {register,handleSubmit,formState:{errors},reset} = useForm<LoginFormData>({
     resolver:zodResolver(loginSchema)
   });
   const navigate = useNavigate();
+  const { loginSuccess} = useAuthStore();
 
   const onSubmit = async (data:LoginFormData) => {
     const result = await authService.login(data)
@@ -18,6 +20,7 @@ const Login = () => {
       reset();
       toast.success("Login Successfull")
       navigate("/task-list");
+      loginSuccess(result);
     }
   };
 
