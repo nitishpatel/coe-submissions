@@ -3,6 +3,7 @@ import React from "react";
 import { useForm } from "react-hook-form";
 import {type LoginFormData, loginSchema } from "../../schemas/LoginSchema";
 import { authService } from "../../services/authService";
+import toast from "react-hot-toast";
 
 const Login = () => {
   const {register,handleSubmit,formState:{errors},reset} = useForm<LoginFormData>({
@@ -13,6 +14,7 @@ const Login = () => {
     const result = await authService.login(data)
     if(result){
       reset();
+      toast.success("Login Successfull")
     }
   };
 

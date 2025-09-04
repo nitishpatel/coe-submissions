@@ -3,6 +3,7 @@ import { useForm } from "react-hook-form";
 import { signupSchema, type SignupFormData } from "../../schemas/SignupSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { authService } from "../../services/authService";
+import toast from "react-hot-toast";
 
 const Signup = () => {
   const {register,handleSubmit,formState:{errors},reset} = useForm<SignupFormData>({
@@ -15,6 +16,7 @@ const Signup = () => {
     console.log("🚀 ~ onSubmit ~ response:", response)
     if(response){
       reset();
+      toast.success("Registered Successfully!")
     }
   }
 
