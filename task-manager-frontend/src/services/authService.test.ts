@@ -1,16 +1,38 @@
-import { describe, it, expect, vi } from "vitest";
-import axios from "axios";
+import { describe, it, expect, vi, beforeEach } from "vitest";
 import { authService } from "./authService";
-import { User } from "../types/user";
+import type { User } from "../types/user";
 
-vi.mock("axios");
-const mockedAxios = axios as unknown as {
-  post: ReturnType<typeof vi.fn>;
-  get: ReturnType<typeof vi.fn>;
-  put: ReturnType<typeof vi.fn>;
-  delete: ReturnType<typeof vi.fn>;
-};
-describe("signupService", () => {
+const hoisted = vi.hoisted(() => ({
+  axiosInstance: {
+    post: vi.fn(),
+    get: vi.fn(),
+    put: vi.fn(),
+    delete: vi.fn(),
+    interceptors: {
+      request: { use: vi.fn() },
+      response: { use: vi.fn() },
+    },
+  },
+}));
+
+vi.mock("axios", () => {
+  return {
+    default: {
+      create: vi.fn(() => hoisted.axiosInstance),
+    },
+  };
+});
+
+beforeEach(() => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  Object.values(hoisted.axiosInstance).forEach((v: any) => {
+    if (typeof v?.mock?.clear === "function") v.mock.clear();
+  });
+  hoisted.axiosInstance.interceptors.request.use.mockClear();
+  hoisted.axiosInstance.interceptors.response.use.mockClear();
+});
+
+describe("authService", () => {
   it("returns a user object on successful signup", async () => {
     const mockUser: User = {
       id: "1f606822-ef78-47ab-9116-6e3dfaa935a9",
@@ -21,7 +43,7 @@ describe("signupService", () => {
       updated_at: "2025-09-03T11:56:20.713998",
     };
 
-    mockedAxios.post.mockResolvedValueOnce({ data: mockUser });
+    hoisted.axiosInstance.post.mockResolvedValueOnce({ data: mockUser });
 
     const result = await authService.register({
       email: "test@example.in",
@@ -29,8 +51,15 @@ describe("signupService", () => {
       confirmPassword: "Test@123",
     });
 
+    expect(hoisted.axiosInstance.post).toHaveBeenCalledWith(
+      "/auth/signup",
+      expect.objectContaining({
+        email: "test@example.in",
+        password: "Test@123",
+        confirmPassword: "Test@123",
+      }),
+      undefined
+    );
     expect(result).toEqual(mockUser);
-    expect(result.is_active).toBe(true);
-    expect(result.full_name).toBeNull();
   });
 });
