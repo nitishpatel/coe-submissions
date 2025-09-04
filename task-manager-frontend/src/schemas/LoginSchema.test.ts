@@ -44,4 +44,23 @@ describe("Login schema", () => {
       );
     }
   });
+  it("fails if password is missing", () => {
+    const result = loginSchema.safeParse({
+      email:"test@gmail.com",
+      password: validBaseUser.password,
+    });
+
+    expect(result.success).toBe(false);
+
+    if (!result.success) {
+      expect(result.error.issues).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            path: ["password"],
+            message: "Please enter a password",
+          }),
+        ])
+      );
+    }
+  });
 });
