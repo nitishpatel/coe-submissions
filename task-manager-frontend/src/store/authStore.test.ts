@@ -20,4 +20,16 @@ describe("auth store", () => {
     expect(updatedAuthStore.user).toBe(loginResponseMock.user);
     expect(updatedAuthStore.token).toBe(loginResponseMock.access_token);
   });
+  it("should reset the state on logout", () => {
+    const authStore = useAuthStore.getState();
+    authStore.loginSuccess(loginResponseMock);
+    const updatedAuthStore = useAuthStore.getState();
+    expect(updatedAuthStore.isAuthenticated).toBe(true);
+    expect(updatedAuthStore.user).toBe(loginResponseMock.user);
+    expect(updatedAuthStore.token).toBe(loginResponseMock.access_token);
+    authStore.logout();
+    const updatedAuthStore2 = useAuthStore.getState();
+    expect(updatedAuthStore2.user).toBe(null);
+    expect(updatedAuthStore2.token).toBe(null);
+  });
 })
