@@ -35,13 +35,13 @@ describe("Login Page", () => {
       })
     ).toBeVisible();
   });
-  // describe("Login form on submit validations", () => {
-  //   it("shows error messages when submitting an empty form", async () => {
-  //     await fireEvent.click(screen.getByRole("button", { name: /login/i }));
-  //     expect(await screen.findByText(/Invalid email/i)).toBeInTheDocument();
-  //     expect(
-  //       await screen.findByText(/Password must be between 8 and 26 characters/i)
-  //     ).toBeInTheDocument();
-  //   });
-  // });
+  describe("Login form on submit validations", () => {
+    it("shows error messages when submitting an empty form", async () => {
+      await fireEvent.click(screen.getByRole("button", { name: /login/i }));
+      expect(await screen.findByText(/Invalid email/i)).toBeInTheDocument();
+      expect(
+        await screen.findByText(/Please enter a password/i)
+      ).toBeInTheDocument();
+    });
+  });
 });
