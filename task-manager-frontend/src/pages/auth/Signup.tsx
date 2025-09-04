@@ -4,11 +4,14 @@ import { signupSchema, type SignupFormData } from "../../schemas/SignupSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { authService } from "../../services/authService";
 import toast from "react-hot-toast";
+import { useNavigate } from "react-router";
 
 const Signup = () => {
   const {register,handleSubmit,formState:{errors},reset} = useForm<SignupFormData>({
     resolver:zodResolver(signupSchema)
   });
+
+  const navigate = useNavigate();
 
   const onSubmit = async (data:SignupFormData)=>{
     console.log("Sign up form data",data);
@@ -17,6 +20,7 @@ const Signup = () => {
     if(response){
       reset();
       toast.success("Registered Successfully!")
+      navigate("/login");
     }
   }
 
