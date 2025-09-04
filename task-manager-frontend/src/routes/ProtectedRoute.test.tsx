@@ -3,6 +3,7 @@ import { render, screen } from "@testing-library/react";
 import { MemoryRouter, Routes, Route } from "react-router";
 import ProtectedRoute from "./ProtectedRoute";
 import { useAuthStore } from "../store/authStore";
+import { loginResponseMock } from "../mocks/loginResponse.mock";
 
 function LoginProbe() {
   return <div>Login Page</div>;
@@ -30,5 +31,21 @@ describe("ProtectedRoute", () => {
     );
 
     expect(screen.getByText(/login page/i)).toBeInTheDocument();
+  });
+  it("does not redirect authenticated users to /login", () => {
+    const authStore = useAuthStore.getState();
+    authStore.loginSuccess(loginResponseMock);
+    render(
+      <MemoryRouter initialEntries={["/dashboard"]}>
+        <Routes>
+          <Route element={<ProtectedRoute redirectTo="/login" />}>
+            <Route path="/dashboard" element={<DashProbe />} />
+          </Route>
+          <Route path="/login" element={<LoginProbe />} />
+        </Routes>
+      </MemoryRouter>
+    );
+
+    expect(screen.getByText(/Dashboard/i)).toBeInTheDocument();
   });
 });
