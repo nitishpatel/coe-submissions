@@ -8,3 +8,8 @@ export const taskService = {
     return data;
   }
 };
+export async function taskListLoader(): Promise<TaskList> {
+  return taskService.list();
+}
+
+export default taskService;

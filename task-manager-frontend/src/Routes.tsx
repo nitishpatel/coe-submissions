@@ -6,6 +6,7 @@ import UnprotectedRoute from "./routes/UnprotectedRoute";
 import ProtectedRoute from "./routes/ProtectedRoute";
 import Home from "./pages/Home";
 import MainLayout from "./layout/MainLayout";
+import { taskListLoader } from "./services/taskService";
 
 export const routes: RouteObject[] = [
   {
@@ -29,7 +30,7 @@ export const routes: RouteObject[] = [
       {
         element: <ProtectedRoute />, // layout guard
         children: [
-          { path: "task-list", element: <TaskList /> },
+          { path: "task-list", element: <TaskList />,loader:taskListLoader },
         ],
       },
     ],
