@@ -46,8 +46,7 @@ describe("Login schema", () => {
   });
   it("fails if password is missing", () => {
     const result = loginSchema.safeParse({
-      email:"test@gmail.com",
-      password: validBaseUser.password,
+      email:validBaseUser.email,
     });
 
     expect(result.success).toBe(false);
@@ -62,5 +61,14 @@ describe("Login schema", () => {
         ])
       );
     }
+  });
+  it("should pass if both email and password are valid", () => {
+    const result = loginSchema.safeParse({
+      email:validBaseUser.email,
+      password:validBaseUser.password
+    });
+
+    expect(result.success).toBe(true);
+
   });
 });
