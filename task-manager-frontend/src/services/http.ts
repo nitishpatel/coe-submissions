@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import axios, { type AxiosInstance,type AxiosRequestConfig,type AxiosResponse } from "axios";
+import { useAuthStore } from "../store/authStore";
 
 class HttpService {
   private client: AxiosInstance;
@@ -13,7 +14,7 @@ class HttpService {
     });
 
     this.client.interceptors.request.use((config) => {
-      const token = localStorage.getItem("token");
+      const token = useAuthStore.getState().token;
       if (token) {
         config.headers.Authorization = `Bearer ${token}`;
       }
