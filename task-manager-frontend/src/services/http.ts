@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import axios, { type AxiosInstance,type AxiosRequestConfig,type AxiosResponse } from "axios";
+import axios, { AxiosError, type AxiosInstance, type AxiosRequestConfig, type AxiosResponse } from "axios";
 import { useAuthStore } from "../store/authStore";
+import toast from "react-hot-toast";
 
 class HttpService {
   private client: AxiosInstance;
@@ -23,7 +24,11 @@ class HttpService {
 
     this.client.interceptors.response.use(
       (response) => response,
-      (error) => {
+      (error: AxiosError) => {
+        if (error.response?.status === 401) {
+          useAuthStore.getState().logout();
+          toast.error("Unauthorized: Please login to continue!")
+        }
         return Promise.reject(error);
       }
     );
