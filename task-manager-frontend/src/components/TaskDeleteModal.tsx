@@ -4,7 +4,8 @@ import { ModalShell } from "./ModalShell";
 const TaskDeleteModal: React.FC<{
   title: string;
   onClose: () => void;
-}> = ({ title, onClose }) => {
+  taskId:string;
+}> = ({ title, onClose,taskId }) => {
   return (
     <ModalShell
       title="Delete task"
@@ -19,8 +20,7 @@ const TaskDeleteModal: React.FC<{
           </button>
           <button
             onClick={() => {
-              // TODO: Implement Delete API
-              // later -> DELETE /api/v1/tasks/{id}
+              console.log("Deleting Task =>",taskId);
               onClose();
             }}
             className="px-3 py-2 text-sm rounded-lg bg-red-600 text-white hover:bg-red-700"
