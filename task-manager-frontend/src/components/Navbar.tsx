@@ -1,5 +1,5 @@
 import React from "react";
-import { useIsAuthenticated } from "../store/authStore";
+import { useAuthStore, useIsAuthenticated } from "../store/authStore";
 import toast from "react-hot-toast";
 
 const Navbar = () => {
@@ -70,7 +70,7 @@ const Navbar = () => {
 
       <button className="max-md:hidden px-6 py-3 text-white bg-indigo-600 hover:bg-indigo-700 transition rounded-full" onClick={()=>{
         if(isAuthed){
-          // implement logout
+          useAuthStore.getState().logout();
         }else{
           toast("Contact us at : info@todoplusplus.in")
         }

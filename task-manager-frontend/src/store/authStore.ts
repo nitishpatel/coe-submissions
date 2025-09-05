@@ -10,6 +10,7 @@ type AuthStore = {
 
 type AuthActions = {
   loginSuccess: (loginResponse: LoginResponse) => void
+  logout: () => void
 }
 type Store = AuthStore & AuthActions
 
@@ -26,6 +27,13 @@ export const useAuthStore = create<Store>()(
           isAuthenticated: true
         }))
       },
+      logout:()=>{
+        set(() => ({
+          user: null,
+          token: null,
+          isAuthenticated: false
+        }))
+      }
     }),
     {
       name: "auth-store",
