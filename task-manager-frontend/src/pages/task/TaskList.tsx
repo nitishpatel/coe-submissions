@@ -508,6 +508,7 @@ const TaskList: React.FC<Props> = ({ initial }) => {
       {confirmDelete && (
         <TaskDeleteModal
           title="Confirm Delete?"
+          taskId={confirmDelete.id}
           onClose={() => {
             setConfirmDelete(null);
           }}
