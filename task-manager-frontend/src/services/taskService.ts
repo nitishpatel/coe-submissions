@@ -13,11 +13,7 @@ export const taskService = {
   },
   deleteTask:(taskId:string)=>{
     return withFallback(
-      () => httpService.delete("/tasks",{
-       data:{
-         taskId:taskId
-       }
-      }),
+      () => httpService.delete(`/tasks/${taskId}`),
       undefined,
       { toastOnError: true, toastMessage: "Error Deleting Task" }
     );

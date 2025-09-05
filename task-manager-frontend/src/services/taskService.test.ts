@@ -52,10 +52,8 @@ describe("authService", () => {
     const result = await taskService.deleteTask("123");
 
    expect(hoisted.axiosInstance.delete).toHaveBeenCalledWith(
-    "/tasks",
-    expect.objectContaining({
-      data: expect.objectContaining({ taskId: "123" })
-    })
+    `/tasks/123`,
+    undefined
   );
   });
 });
