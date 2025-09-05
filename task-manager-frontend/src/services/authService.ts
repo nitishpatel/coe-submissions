@@ -1,3 +1,4 @@
+import toast from "react-hot-toast";
 import type { LoginFormData } from "../schemas/LoginSchema";
 import type { SignupFormData } from "../schemas/SignupSchema";
 import type { LoginResponse, User } from "../types";
@@ -9,7 +10,11 @@ export const authService = {
     return response.data;
   },
   login: async (data: LoginFormData) => {
-    const response = await httpService.post<LoginResponse>("/auth/login", data);
-    return response.data;
+    try {
+      const response = await httpService.post<LoginResponse>("/auth/login", data);
+      return response.data;
+    } catch (e) {
+      toast.error("Invalid Email or Password!")
+    }
   }
 };
