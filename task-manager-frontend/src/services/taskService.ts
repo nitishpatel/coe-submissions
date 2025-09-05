@@ -11,6 +11,17 @@ export const taskService = {
       { toastOnError: true, toastMessage: "Error fetching tasks" }
     );
   },
+  deleteTask:(taskId:string)=>{
+    return withFallback(
+      () => httpService.delete("/tasks",{
+       data:{
+         taskId:taskId
+       }
+      }),
+      undefined,
+      { toastOnError: true, toastMessage: "Error Deleting Task" }
+    );
+  }
 };
 export async function taskListLoader(): Promise<TaskList> {
   return taskService.list();
