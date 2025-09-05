@@ -43,4 +43,19 @@ describe("authService", () => {
     expect(hoisted.axiosInstance.get).toHaveBeenCalledWith("/tasks", undefined);
     expect(result).toEqual(taskListResponseMock);
   });
+  it("should respond with status 204", async () => {
+    hoisted.axiosInstance.delete.mockResolvedValueOnce({
+      status: 204,
+      data: null,
+    });
+
+    const result = await taskService.deleteTask("123");
+
+   expect(hoisted.axiosInstance.delete).toHaveBeenCalledWith(
+    "/tasks",
+    expect.objectContaining({
+      data: expect.objectContaining({ taskId: "123" })
+    })
+  );
+  });
 });
