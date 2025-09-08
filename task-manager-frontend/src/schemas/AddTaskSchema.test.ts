@@ -76,4 +76,31 @@ describe("AddTask schema", () => {
 
     expect(result.success).toBe(true);
   });
+  it("should not fail if status is missing", () => {
+    const result = addTaskSchema.safeParse({
+      title:validTask.title,
+      description:validTask.description
+    });
+
+    expect(result.success).toBe(true);
+  });
+  it("should fail if status is invalid", () => {
+    const result = addTaskSchema.safeParse({
+      title:validTask.title,
+      description:validTask.description,
+      status:"INVALID_STATUS"
+    });
+
+    expect(result.success).toBe(false);
+    if (!result.success) {
+      expect(result.error.issues).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            path: ["status"],
+            message: "Invalid Status",
+          }),
+        ])
+      );
+    }
+  });
 });
