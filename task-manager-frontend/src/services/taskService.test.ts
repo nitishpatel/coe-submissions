@@ -7,6 +7,7 @@ const hoisted = vi.hoisted(() => ({
     post: vi.fn(),
     get: vi.fn(),
     put: vi.fn(),
+    patch: vi.fn(),
     delete: vi.fn(),
     interceptors: {
       request: { use: vi.fn() },
@@ -66,6 +67,22 @@ describe("authService", () => {
 
     expect(hoisted.axiosInstance.post).toHaveBeenCalledWith(
       `/tasks`,
+      taskCreateRequestMock,
+      undefined
+    );
+
+    expect(result).toEqual(taskCreateResponseMock);
+  });
+  it("updated task should return with 200", async () => {
+    hoisted.axiosInstance.patch.mockResolvedValueOnce({
+      status: 200,
+      data: taskCreateResponseMock,
+    });
+
+    const result = await taskService.updateTask("1",taskCreateRequestMock);
+
+    expect(hoisted.axiosInstance.patch).toHaveBeenCalledWith(
+      `/tasks/1`,
       taskCreateRequestMock,
       undefined
     );
