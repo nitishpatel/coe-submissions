@@ -1,5 +1,6 @@
 import React from "react";
 import { ModalShell } from "./ModalShell";
+import taskService from "../services/taskService";
 
 const TaskDeleteModal: React.FC<{
   title: string;
@@ -19,8 +20,9 @@ const TaskDeleteModal: React.FC<{
             Cancel
           </button>
           <button
-            onClick={() => {
+            onClick={async() => {
               console.log("Deleting Task =>",taskId);
+              await taskService.deleteTask(taskId)
               onClose();
             }}
             className="px-3 py-2 text-sm rounded-lg bg-red-600 text-white hover:bg-red-700"
