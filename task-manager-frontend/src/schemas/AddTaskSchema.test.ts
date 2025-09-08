@@ -61,4 +61,19 @@ describe("AddTask schema", () => {
       );
     }
   });
+  it("should not fail if description is missing", () => {
+    const result = addTaskSchema.safeParse({
+      title:validTask.title
+    });
+
+    expect(result.success).toBe(true);
+  });
+  it("should not fail if description is available", () => {
+    const result = addTaskSchema.safeParse({
+      title:validTask.title,
+      description:validTask.description
+    });
+
+    expect(result.success).toBe(true);
+  });
 });
