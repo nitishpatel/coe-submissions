@@ -58,12 +58,13 @@ describe("Tasklist", () => {
     expect(screen.getByLabelText(/sort by/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/order/i)).toBeInTheDocument();
   });
-
 });
 
 describe("TaskList pagination & limit", () => {
   beforeEach(() => {
-    (RRD.useLoaderData as unknown as vi.Mock).mockReturnValue(taskListResponseMock);
+    (RRD.useLoaderData as unknown as vi.Mock).mockReturnValue(
+      taskListResponseMock
+    );
     (RRD.useRevalidator as unknown as vi.Mock) = vi.fn(() => ({
       revalidate: vi.fn(),
       state: "idle",
@@ -71,10 +72,15 @@ describe("TaskList pagination & limit", () => {
   });
 
   it("clicking Next should increment page query param", async () => {
-    const history = createMemoryHistory({ initialEntries: ["/task-list?page=1"] });
+    const history = createMemoryHistory({
+      initialEntries: ["/task-list?page=1"],
+    });
 
     render(
-      <Router location={history.location.pathname + history.location.search} navigator={history}>
+      <Router
+        location={history.location.pathname + history.location.search}
+        navigator={history}
+      >
         <TaskList />
       </Router>
     );
@@ -88,10 +94,15 @@ describe("TaskList pagination & limit", () => {
   });
 
   it("clicking Prev should decrement page query param (but not go below 1)", async () => {
-    const history = createMemoryHistory({ initialEntries: ["/task-list?page=2"] });
+    const history = createMemoryHistory({
+      initialEntries: ["/task-list?page=2"],
+    });
 
     render(
-      <Router location={history.location.pathname + history.location.search} navigator={history}>
+      <Router
+        location={history.location.pathname + history.location.search}
+        navigator={history}
+      >
         <TaskList />
       </Router>
     );
@@ -104,10 +115,15 @@ describe("TaskList pagination & limit", () => {
   });
 
   it("changing Limit should update the limit query param (and reset page to 1)", async () => {
-    const history = createMemoryHistory({ initialEntries: ["/task-list?page=3&limit=10"] });
+    const history = createMemoryHistory({
+      initialEntries: ["/task-list?page=3&limit=10"],
+    });
 
     render(
-      <Router location={history.location.pathname + history.location.search} navigator={history}>
+      <Router
+        location={history.location.pathname + history.location.search}
+        navigator={history}
+      >
         <TaskList />
       </Router>
     );
@@ -124,7 +140,9 @@ describe("TaskList pagination & limit", () => {
 
 describe("TaskList status select (URL behavior)", () => {
   beforeEach(() => {
-    (RRD.useLoaderData as unknown as vi.Mock).mockReturnValue(taskListResponseMock);
+    (RRD.useLoaderData as unknown as vi.Mock).mockReturnValue(
+      taskListResponseMock
+    );
     (RRD.useRevalidator as unknown as vi.Mock) = vi.fn(() => ({
       revalidate: vi.fn(),
       state: "idle",
@@ -135,7 +153,10 @@ describe("TaskList status select (URL behavior)", () => {
     const history = createMemoryHistory({ initialEntries: ["/task-list"] });
 
     render(
-      <Router location={history.location.pathname + history.location.search} navigator={history}>
+      <Router
+        location={history.location.pathname + history.location.search}
+        navigator={history}
+      >
         <TaskList />
       </Router>
     );
@@ -151,10 +172,15 @@ describe("TaskList status select (URL behavior)", () => {
   });
 
   it("selecting 'All' removes task_status from the URL when previously set", async () => {
-    const history = createMemoryHistory({ initialEntries: ["/task-list?task_status=todo"] });
+    const history = createMemoryHistory({
+      initialEntries: ["/task-list?task_status=todo"],
+    });
 
     render(
-      <Router location={history.location.pathname + history.location.search} navigator={history}>
+      <Router
+        location={history.location.pathname + history.location.search}
+        navigator={history}
+      >
         <TaskList />
       </Router>
     );
@@ -172,10 +198,15 @@ describe("TaskList status select (URL behavior)", () => {
   });
 
   it("changing status from one value to another updates the URL accordingly", async () => {
-    const history = createMemoryHistory({ initialEntries: ["/task-list?task_status=in_progress"] });
+    const history = createMemoryHistory({
+      initialEntries: ["/task-list?task_status=in_progress"],
+    });
 
     render(
-      <Router location={history.location.pathname + history.location.search} navigator={history}>
+      <Router
+        location={history.location.pathname + history.location.search}
+        navigator={history}
+      >
         <TaskList />
       </Router>
     );
@@ -190,5 +221,100 @@ describe("TaskList status select (URL behavior)", () => {
       expect(params.get("task_status")).toBe("done");
       expect(history.location.pathname).toBe("/task-list");
     });
+  });
+});
+describe("TaskList sort/order selects (URL behavior)", () => {
+  beforeEach(() => {
+    (RRD.useLoaderData as unknown as vi.Mock).mockReturnValue(
+      taskListResponseMock
+    );
+    (RRD.useRevalidator as unknown as vi.Mock) = vi.fn(() => ({
+      revalidate: vi.fn(),
+      state: "idle",
+    }));
+  });
+  it("shows NA (empty) for sort_by and 'asc' for order when none in URL", () => {
+    const history = createMemoryHistory({ initialEntries: ["/task-list"] });
+
+    render(
+      <Router
+        location={history.location.pathname + history.location.search}
+        navigator={history}
+      >
+        <TaskList />
+      </Router>
+    );
+
+    const sortSelect = screen.getByLabelText(/sort by/i) as HTMLSelectElement;
+    const orderSelect = screen.getByLabelText(/order/i) as HTMLSelectElement;
+
+    // sort_by absent in URL → UI shows NA (empty string)
+    expect(sortSelect.value).toBe("");
+    // order defaults to asc
+    expect(orderSelect.value).toBe("asc");
+  });
+
+  it("changing sort_by updates the URL", async () => {
+    const history = createMemoryHistory({ initialEntries: ["/task-list"] });
+
+    render(
+      <Router
+        location={history.location.pathname + history.location.search}
+        navigator={history}
+      >
+        <TaskList />
+      </Router>
+    );
+
+    const sortSelect = screen.getByLabelText(/sort by/i) as HTMLSelectElement;
+    fireEvent.change(sortSelect, { target: { value: "status" } });
+
+    await waitFor(() => {
+      const params = new URLSearchParams(history.location.search);
+      expect(params.get("sort_by")).toBe("status");
+      expect(params.get("order") ?? "asc").toBe("asc");
+    });
+  });
+
+  it("changing order updates the URL", async () => {
+    const history = createMemoryHistory({ initialEntries: ["/task-list"] });
+
+    render(
+      <Router
+        location={history.location.pathname + history.location.search}
+        navigator={history}
+      >
+        <TaskList />
+      </Router>
+    );
+
+    const orderSelect = screen.getByLabelText(/order/i) as HTMLSelectElement;
+    fireEvent.change(orderSelect, { target: { value: "desc" } });
+
+    await waitFor(() => {
+      const params = new URLSearchParams(history.location.search);
+      expect(params.get("order")).toBe("desc");
+    });
+  });
+
+  it("respects initial URL values for sort_by and order", () => {
+    const history = createMemoryHistory({
+      initialEntries: ["/task-list?sort_by=status&order=desc"],
+    });
+
+    render(
+      <Router
+        location={history.location.pathname + history.location.search}
+        navigator={history}
+      >
+        <TaskList />
+      </Router>
+    );
+
+    const sortSelect = screen.getByLabelText(/sort by/i) as HTMLSelectElement;
+    const orderSelect = screen.getByLabelText(/order/i) as HTMLSelectElement;
+
+    expect(sortSelect.value).toBe("status");
+    expect(orderSelect.value).toBe("desc");
   });
 });
