@@ -24,6 +24,13 @@ export const taskService = {
       undefined,
       { toastOnError: true, toastMessage: "Error Deleting Task" }
     );
+  },
+  updateTask: async(taskId:string,data:TaskCreateRequest):Promise<Task>=>{
+    return withFallback(
+      () => httpService.patch<Task>(`/tasks/${taskId}`,data),
+      undefined,
+      { toastOnError: true, toastMessage: "Error Updating Task" }
+    );
   }
 };
 export async function taskListLoader(): Promise<TaskList> {

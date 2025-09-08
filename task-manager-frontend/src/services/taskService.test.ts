@@ -35,7 +35,7 @@ beforeEach(() => {
   hoisted.axiosInstance.interceptors.response.use.mockClear();
 });
 
-describe("authService", () => {
+describe("taskService", () => {
   it("should return a list of tasks", async () => {
     hoisted.axiosInstance.get.mockResolvedValueOnce({ data: taskListResponseMock });
 
