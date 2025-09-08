@@ -490,15 +490,15 @@ const TaskList: React.FC<Props> = ({ initial }) => {
         <AddOrEditModal
           title="Edit task"
           initial={{
+            id:showEdit.id,
             title: showEdit.title,
             description: showEdit.description ?? "",
             status: showEdit.status,
           }}
           onClose={() => setShowEdit(null)}
           onSubmit={(values) => {
-            //TODO: Implement Update Logic
             setShowEdit(null);
-            // later -> PATCH /api/v1/tasks/{id}  { title?, description?, status? }
+            revalidator.revalidate();
           }}
         />
       )}
