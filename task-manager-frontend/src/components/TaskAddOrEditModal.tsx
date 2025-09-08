@@ -25,7 +25,7 @@ const StatusSelect: React.FC<{
 
 export const AddOrEditModal: React.FC<{
   title: string;
-  initial: { title: string; description?: string; status: Status };
+  initial: { title: string; description?: string; status: Status,id?:string };
   onClose: () => void;
   onSubmit: (data: AddTaskFormData) => void;
 }> = ({ title, initial, onClose, onSubmit }) => {
@@ -47,10 +47,16 @@ export const AddOrEditModal: React.FC<{
   const submit: SubmitHandler<AddTaskFormData> = async (data) => {
     try {
       console.log("🚀 ~ submit ~ data:", data);
-      const result = await taskService.addTask(data as TaskCreateRequest);
-      if (result) {
-        toast.success("Task Added Successfully!");
+      let message = "Task Added Successfully!"
+      if(initial.id){
+        const updateResult = await taskService.updateTask(initial.id,data as TaskCreateRequest);
+        if(updateResult){
+          message = "Task Updated Successfully!"
+        }
+      }else{
+        await taskService.addTask(data as TaskCreateRequest);
       }
+      toast.success(message);
       onSubmit(data);
     } catch (e) {
       toast.error("Error adding Task!");
