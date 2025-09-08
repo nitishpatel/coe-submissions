@@ -1,6 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { taskService } from "./taskService";
+import { taskListApiPath, taskService } from "./taskService";
 import { taskCreateRequestMock, taskCreateResponseMock, taskListResponseMock } from "../mocks/taskResponse.mock";
+import type { ParsedTaskListQuery } from "../schemas/TaskListSchema";
 
 const hoisted = vi.hoisted(() => ({
   axiosInstance: {
@@ -37,11 +38,22 @@ beforeEach(() => {
 
 describe("taskService", () => {
   it("should return a list of tasks", async () => {
+    const query: ParsedTaskListQuery = {
+      page: 1,
+      limit: 10,
+      order: "asc",
+      task_status: undefined,
+      sort_by: undefined,
+      date_from: undefined,
+      date_to: undefined,
+      title: undefined,
+    };
+
     hoisted.axiosInstance.get.mockResolvedValueOnce({ data: taskListResponseMock });
 
-    const result = await taskService.list();
+    const result = await taskService.list(query);
 
-    expect(hoisted.axiosInstance.get).toHaveBeenCalledWith("/tasks", undefined);
+    expect(hoisted.axiosInstance.get).toHaveBeenCalledWith(taskListApiPath(query),undefined);
     expect(result).toEqual(taskListResponseMock);
   });
   it("should respond with status 204", async () => {
@@ -79,7 +91,7 @@ describe("taskService", () => {
       data: taskCreateResponseMock,
     });
 
-    const result = await taskService.updateTask("1",taskCreateRequestMock);
+    const result = await taskService.updateTask("1", taskCreateRequestMock);
 
     expect(hoisted.axiosInstance.patch).toHaveBeenCalledWith(
       `/tasks/1`,
