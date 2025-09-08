@@ -13,16 +13,23 @@ vi.mock("react-router", async () => {
   };
 });
 describe("Tasklist", () => {
-  let history:MemoryHistory;
+  let history: MemoryHistory;
   beforeEach(() => {
-
     history = createMemoryHistory({
       initialEntries: ["/login"],
     });
-    (RRD.useLoaderData as unknown as vi.Mock).mockReturnValue(taskListResponseMock);
-    render(<Router location={history.location.pathname} navigator={history}>
-      <TaskList/>
-    </Router>)
+    (RRD.useLoaderData as unknown as vi.Mock).mockReturnValue(
+      taskListResponseMock
+    );
+    (RRD.useRevalidator as unknown as vi.Mock) = vi.fn(() => ({
+      revalidate: vi.fn(),
+      state: "idle",
+    }));
+    render(
+      <Router location={history.location.pathname} navigator={history}>
+        <TaskList />
+      </Router>
+    );
   });
   it("renders the heading of the tasklist page", () => {
     expect(screen.getByText(/Your Tasks/i)).toBeInTheDocument();
@@ -33,21 +40,22 @@ describe("Tasklist", () => {
     expect(screen.getByText(/Completed/i)).toBeInTheDocument();
   });
   it("renders the add task button", () => {
-    expect(screen.getByRole("button",{name:/Add Task/i})).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: /Add Task/i })
+    ).toBeInTheDocument();
   });
   it("renders the reset button", () => {
-    expect(screen.getByRole("button",{name:/reset/i})).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /reset/i })).toBeInTheDocument();
   });
   it("renders the pagination button", () => {
-    expect(screen.getByRole("button",{name:/prev/i})).toBeInTheDocument();
-    expect(screen.getByRole("button",{name:/next/i})).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /prev/i })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /next/i })).toBeInTheDocument();
   });
   it("renders the filter dropdowns", () => {
-    expect(screen.getByLabelText(/status/i  )).toBeInTheDocument();
-    expect(screen.getByLabelText(/created from/i  )).toBeInTheDocument();
-    expect(screen.getByLabelText(/created to/i  )).toBeInTheDocument();
-    expect(screen.getByLabelText(/sort by/i  )).toBeInTheDocument();
-    expect(screen.getByLabelText(/order/i  )).toBeInTheDocument();
+    expect(screen.getByLabelText(/status/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/created from/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/created to/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/sort by/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/order/i)).toBeInTheDocument();
   });
-
 });
