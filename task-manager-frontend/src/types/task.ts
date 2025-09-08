@@ -9,3 +9,9 @@ export type Task = {
 };
 
 export type TaskList = Task[];
+
+export type TaskCreateRequest = {
+  title: string;
+  description?: string;
+  status: Status;
+}

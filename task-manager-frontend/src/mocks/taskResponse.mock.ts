@@ -1,4 +1,4 @@
-import type { Task } from "../types";
+import type { Task, TaskCreateRequest } from "../types";
 
 export const taskListResponseMock: Task[] = [
   {
@@ -26,3 +26,17 @@ export const taskListResponseMock: Task[] = [
     updated_at: "2025-09-04T11:15:00Z",
   },
 ];
+
+export const taskCreateRequestMock: TaskCreateRequest = {
+  title: "Task 1",
+  description: "Task 1 Description",
+  status: "todo"
+}
+export const taskCreateResponseMock: Task = {
+  id: "1",
+  title: "Task 1",
+  description: "Task 1 Description",
+  status: "todo",
+  created_at: "2025-09-04T10:00:00Z",
+  updated_at: "2025-09-04T10:00:00Z",
+}

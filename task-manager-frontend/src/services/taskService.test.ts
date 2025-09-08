@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { taskService } from "./taskService";
-import { taskListResponseMock } from "../mocks/taskResponse.mock";
+import { taskCreateRequestMock, taskCreateResponseMock, taskListResponseMock } from "../mocks/taskResponse.mock";
 
 const hoisted = vi.hoisted(() => ({
   axiosInstance: {
@@ -51,9 +51,25 @@ describe("authService", () => {
 
     const result = await taskService.deleteTask("123");
 
-   expect(hoisted.axiosInstance.delete).toHaveBeenCalledWith(
-    `/tasks/123`,
-    undefined
-  );
+    expect(hoisted.axiosInstance.delete).toHaveBeenCalledWith(
+      `/tasks/123`,
+      undefined
+    );
+  });
+  it("add task should return with 201 created", async () => {
+    hoisted.axiosInstance.post.mockResolvedValueOnce({
+      status: 201,
+      data: taskCreateResponseMock,
+    });
+
+    const result = await taskService.addTask(taskCreateRequestMock);
+
+    expect(hoisted.axiosInstance.post).toHaveBeenCalledWith(
+      `/tasks`,
+      taskCreateRequestMock,
+      undefined
+    );
+
+    expect(result).toEqual(taskCreateResponseMock);
   });
 });
