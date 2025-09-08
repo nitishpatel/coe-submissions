@@ -10,6 +10,7 @@ const validTask:TaskCreateRequest = {
 describe("AddTask schema", () => {
   it("fails if title is missing", () => {
     const result = addTaskSchema.safeParse({
+      status:validTask.status
     });
 
     expect(result.success).toBe(false);
@@ -45,7 +46,7 @@ describe("AddTask schema", () => {
   });
   it("fails if title is more than 200 characters", () => {
     const result = addTaskSchema.safeParse({
-      title:"A".repeat(201)
+      title:"A".repeat(201),
     });
 
     expect(result.success).toBe(false);
@@ -63,7 +64,8 @@ describe("AddTask schema", () => {
   });
   it("should not fail if description is missing", () => {
     const result = addTaskSchema.safeParse({
-      title:validTask.title
+      title:validTask.title,
+      status:validTask.status
     });
 
     expect(result.success).toBe(true);
@@ -71,18 +73,29 @@ describe("AddTask schema", () => {
   it("should not fail if description is available", () => {
     const result = addTaskSchema.safeParse({
       title:validTask.title,
-      description:validTask.description
+      description:validTask.description,
+      status:validTask.status
     });
 
     expect(result.success).toBe(true);
   });
-  it("should not fail if status is missing", () => {
+  it("should fail if status is missing", () => {
     const result = addTaskSchema.safeParse({
       title:validTask.title,
       description:validTask.description
     });
 
-    expect(result.success).toBe(true);
+    expect(result.success).toBe(false);
+    if (!result.success) {
+      expect(result.error.issues).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            path: ["status"],
+            message: "Invalid Status",
+          }),
+        ])
+      );
+    }
   });
   it("should fail if status is invalid", () => {
     const result = addTaskSchema.safeParse({
