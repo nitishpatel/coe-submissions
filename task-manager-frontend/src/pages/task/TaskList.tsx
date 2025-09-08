@@ -3,6 +3,7 @@ import type { Status, Task, TaskList } from "../../types";
 import { AddOrEditModal } from "../../components/TaskAddOrEditModal";
 import TaskDeleteModal from "../../components/TaskDeleteModal";
 import { useLoaderData, useRevalidator } from "react-router";
+import taskService from "../../services/taskService";
 
 type Props = {
   initial?: Task[]; // seed list
@@ -225,7 +226,6 @@ const TaskList: React.FC<Props> = ({ initial }) => {
   const tasks = useLoaderData() as TaskList;
   const revalidator = useRevalidator();
 
-
   const [filterTitle, setFilterTitle] = React.useState(""); // client-side
   const [taskStatus, setTaskStatus] = React.useState<"" | Status>(""); // task_status
   const [dateFrom, setDateFrom] = React.useState(""); // YYYY-MM-DD
@@ -252,7 +252,7 @@ const TaskList: React.FC<Props> = ({ initial }) => {
   }, [tasks]);
 
   // ===== UI Handlers (intention-revealing, easy to wire later) =====
-  const moveStatus = (task: Task, dir: "left" | "right") => {
+  const moveStatus = async (task: Task, dir: "left" | "right") => {
     const order: Status[] = ["todo", "in_progress", "done"];
     const idx = order.indexOf(task.status);
     const next =
@@ -260,25 +260,21 @@ const TaskList: React.FC<Props> = ({ initial }) => {
         ? order[Math.max(0, idx - 1)]
         : order[Math.min(order.length - 1, idx + 1)];
     if (next !== task.status) {
-      // setItems((prev) =>
-      //   prev.map((t) =>
-      //     t.id === task.id
-      //       ? { ...t, status: next, updated_at: new Date().toISOString() }
-      //       : t
-      //   )
-      // );
+      await taskService.updateTask(task.id, {
+        title: task.title,
+        description: task.description,
+        status: next,
+      });
+      revalidator.revalidate();
       // later -> PATCH /api/v1/tasks/{id} { status: next }
     }
   };
 
-  const onDropTask = (id: string, to: Status) => {
-    // setItems((prev) =>
-    //   prev.map((t) =>
-    //     t.id === id
-    //       ? { ...t, status: to, updated_at: new Date().toISOString() }
-    //       : t
-    //   )
-    // );
+  const onDropTask = async (id: string, to: Status) => {
+    await taskService.updateTask(id, {
+      status: to,
+    });
+    revalidator.revalidate();
     setDragId(null);
     // later -> PATCH /api/v1/tasks/{id} { status: to }
   };
@@ -490,7 +486,7 @@ const TaskList: React.FC<Props> = ({ initial }) => {
         <AddOrEditModal
           title="Edit task"
           initial={{
-            id:showEdit.id,
+            id: showEdit.id,
             title: showEdit.title,
             description: showEdit.description ?? "",
             status: showEdit.status,
