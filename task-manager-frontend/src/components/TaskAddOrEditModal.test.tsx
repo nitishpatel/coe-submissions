@@ -1,6 +1,18 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { AddOrEditModal } from "./TaskAddOrEditModal";
+import {
+  taskCreateRequestMock,
+  taskCreateResponseMock,
+} from "../mocks/taskResponse.mock";
+import { taskService } from "../services/taskService";
 
+vi.mock("../services/taskService", () => {
+  const addTaskMock = vi.fn();
+  return {
+    taskService: { addTask: addTaskMock }, // named export
+    default: { addTask: addTaskMock }, // default export
+  };
+});
 describe("Task Add or Edit Modal", () => {
   beforeEach(() => {
     render(
@@ -47,7 +59,11 @@ describe("Task Add or Edit Modal", () => {
         value: "A",
       },
     });
-    expect(await screen.findByText(/Title should be between 2 to 200 characters long/i)).toBeInTheDocument();
+    expect(
+      await screen.findByText(
+        /Title should be between 2 to 200 characters long/i
+      )
+    ).toBeInTheDocument();
   });
   it("should render title error field max length check", async () => {
     fireEvent.input(screen.getByLabelText(/Title/i), {
@@ -55,6 +71,34 @@ describe("Task Add or Edit Modal", () => {
         value: "A".repeat(201),
       },
     });
-    expect(await screen.findByText(/Title should be between 2 to 200 characters long/i)).toBeInTheDocument();
+    expect(
+      await screen.findByText(
+        /Title should be between 2 to 200 characters long/i
+      )
+    ).toBeInTheDocument();
+  });
+  it("save button should trigger the add task api call", async () => {
+    const addTaskMock = vi.mocked(taskService.addTask);
+    addTaskMock.mockResolvedValueOnce(taskCreateResponseMock);
+
+    fireEvent.input(screen.getByLabelText(/Title/i), {
+      target: { value: "Task 1" },
+    });
+    fireEvent.input(screen.getByLabelText(/Description/i), {
+      target: { value: "Task 1 Description" },
+    });
+
+    await waitFor(() =>
+      expect(screen.getByRole("button", { name: /save/i })).toBeEnabled()
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: /save/i }));
+
+    await waitFor(() => {
+      expect(addTaskMock).toHaveBeenCalled();
+      expect(addTaskMock).toHaveBeenCalledWith(
+        expect.objectContaining(taskCreateRequestMock)
+      );
+    });
   });
 });
