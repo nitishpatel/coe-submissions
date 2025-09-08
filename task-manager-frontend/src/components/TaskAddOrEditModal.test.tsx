@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { AddOrEditModal } from "./TaskAddOrEditModal";
 
 describe("Task Add or Edit Modal", () => {
@@ -18,8 +18,8 @@ describe("Task Add or Edit Modal", () => {
   it("renders the cancel button",()=>{
     expect(screen.getByRole("button",{name:/cancel/i})).toBeVisible();
   })
-  it("renders the save button",()=>{
-    expect(screen.getByRole("button",{name:/save/i})).toBeVisible();
+  it("renders the save button in disabled state",()=>{
+    expect(screen.getByRole("button",{name:/save/i})).toBeDisabled();
   })
   it("renders the title field",()=>{
     expect(screen.getByLabelText(/Title/i)).toBeVisible();
@@ -29,5 +29,16 @@ describe("Task Add or Edit Modal", () => {
   })
   it("renders the description field",()=>{
     expect(screen.getByLabelText(/description/i)).toBeVisible();
+  })
+  it("save button to be enabled if form is valid",async()=>{
+    expect(screen.getByRole("button",{name:/save/i})).toBeDisabled();
+    fireEvent.input(screen.getByLabelText(/Title/i),{
+      target:{
+        value:"Test Title"
+      }
+    })
+    await waitFor(() =>
+    expect(screen.getByRole("button", { name: /save/i })).toBeEnabled()
+  );
   })
 });
