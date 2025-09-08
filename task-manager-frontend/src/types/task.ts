@@ -15,3 +15,8 @@ export type TaskCreateRequest = {
   description?: string;
   status: Status;
 }
+export type TaskUpdateRequest = {
+  title?: string;
+  description?: string;
+  status?: Status;
+}

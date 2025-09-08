@@ -1,5 +1,5 @@
 
-import type { Task, TaskCreateRequest, TaskList } from "../types";
+import type { Task, TaskCreateRequest, TaskList, TaskUpdateRequest } from "../types";
 import { httpService } from "./http";
 import { withFallback } from "../utils/apiUtils";
 
@@ -25,7 +25,7 @@ export const taskService = {
       { toastOnError: true, toastMessage: "Error Deleting Task" }
     );
   },
-  updateTask: async(taskId:string,data:TaskCreateRequest):Promise<Task>=>{
+  updateTask: async(taskId:string,data:TaskUpdateRequest):Promise<Task>=>{
     return withFallback(
       () => httpService.patch<Task>(`/tasks/${taskId}`,data),
       undefined,
