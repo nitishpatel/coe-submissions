@@ -1,8 +1,8 @@
-import React from "react";
+import React, { useEffect } from "react";
 import type { Status, Task, TaskList } from "../../types";
 import { AddOrEditModal } from "../../components/TaskAddOrEditModal";
 import TaskDeleteModal from "../../components/TaskDeleteModal";
-import { useLoaderData } from "react-router";
+import { useLoaderData, useRevalidator } from "react-router";
 
 type Props = {
   initial?: Task[]; // seed list
@@ -223,7 +223,8 @@ const Column: React.FC<{
 
 const TaskList: React.FC<Props> = ({ initial }) => {
   const tasks = useLoaderData() as TaskList;
-  const [items, setItems] = React.useState<TaskList>(tasks);
+  const revalidator = useRevalidator();
+
 
   const [filterTitle, setFilterTitle] = React.useState(""); // client-side
   const [taskStatus, setTaskStatus] = React.useState<"" | Status>(""); // task_status
@@ -246,9 +247,9 @@ const TaskList: React.FC<Props> = ({ initial }) => {
   // group into columns (client display)
   const grouped = React.useMemo(() => {
     const by: Record<Status, Task[]> = { todo: [], in_progress: [], done: [] };
-    items.forEach((t) => by[t.status].push(t));
+    tasks.forEach((t) => by[t.status].push(t));
     return by;
-  }, [items]);
+  }, [tasks]);
 
   // ===== UI Handlers (intention-revealing, easy to wire later) =====
   const moveStatus = (task: Task, dir: "left" | "right") => {
@@ -259,25 +260,25 @@ const TaskList: React.FC<Props> = ({ initial }) => {
         ? order[Math.max(0, idx - 1)]
         : order[Math.min(order.length - 1, idx + 1)];
     if (next !== task.status) {
-      setItems((prev) =>
-        prev.map((t) =>
-          t.id === task.id
-            ? { ...t, status: next, updated_at: new Date().toISOString() }
-            : t
-        )
-      );
+      // setItems((prev) =>
+      //   prev.map((t) =>
+      //     t.id === task.id
+      //       ? { ...t, status: next, updated_at: new Date().toISOString() }
+      //       : t
+      //   )
+      // );
       // later -> PATCH /api/v1/tasks/{id} { status: next }
     }
   };
 
   const onDropTask = (id: string, to: Status) => {
-    setItems((prev) =>
-      prev.map((t) =>
-        t.id === id
-          ? { ...t, status: to, updated_at: new Date().toISOString() }
-          : t
-      )
-    );
+    // setItems((prev) =>
+    //   prev.map((t) =>
+    //     t.id === id
+    //       ? { ...t, status: to, updated_at: new Date().toISOString() }
+    //       : t
+    //   )
+    // );
     setDragId(null);
     // later -> PATCH /api/v1/tasks/{id} { status: to }
   };
@@ -478,10 +479,8 @@ const TaskList: React.FC<Props> = ({ initial }) => {
           initial={{ title: "", description: "", status: "todo" }}
           onClose={() => setShowAdd(false)}
           onSubmit={(values) => {
-            //TODO: Implement Add Logic
-
             setShowAdd(false);
-            // later -> POST /api/v1/tasks  { title, description, status }
+            revalidator.revalidate();
           }}
         />
       )}
@@ -511,6 +510,7 @@ const TaskList: React.FC<Props> = ({ initial }) => {
           taskId={confirmDelete.id}
           onClose={() => {
             setConfirmDelete(null);
+            revalidator.revalidate();
           }}
         />
       )}
