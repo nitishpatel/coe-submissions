@@ -8,14 +8,16 @@ import { taskService } from "../services/taskService";
 
 vi.mock("../services/taskService", () => {
   const addTaskMock = vi.fn();
+  const updateTaskMock = vi.fn();
   return {
-    taskService: { addTask: addTaskMock }, // named export
-    default: { addTask: addTaskMock }, // default export
+    taskService: { addTask: addTaskMock, updateTask: updateTaskMock }, // named export
+    default: { addTask: addTaskMock, updateTask: updateTaskMock }, // default export
   };
 });
 describe("Task Add or Edit Modal", () => {
+  let unmountModal: () => void;
   beforeEach(() => {
-    render(
+    const { unmount } = render(
       <AddOrEditModal
         onClose={() => {}}
         onSubmit={() => {}}
@@ -23,6 +25,7 @@ describe("Task Add or Edit Modal", () => {
         initial={{ title: "", description: "", status: "todo" }}
       />
     );
+    unmountModal = unmount;
   });
   it("renders the heading of the modal", () => {
     expect(screen.getByText(/Add Task/i)).toBeInTheDocument();
@@ -98,6 +101,49 @@ describe("Task Add or Edit Modal", () => {
       expect(addTaskMock).toHaveBeenCalled();
       expect(addTaskMock).toHaveBeenCalledWith(
         expect.objectContaining(taskCreateRequestMock)
+      );
+    });
+  });
+  it("save button should trigger the update task api call when editing the task", async () => {
+    unmountModal();
+    render(
+      <AddOrEditModal
+        onClose={() => {}}
+        onSubmit={() => {}}
+        title="Add Task"
+        initial={{
+          title: "Task 1",
+          description: "Task 1 Description",
+          status: "todo",
+          id: "1",
+        }}
+      />
+    );
+    const updateTaskMock = vi.mocked(taskService.updateTask);
+    updateTaskMock.mockResolvedValueOnce(taskCreateResponseMock);
+
+    fireEvent.input(screen.getByLabelText(/Title/i), {
+      target: { value: "Updated" },
+    });
+    fireEvent.input(screen.getByLabelText(/Description/i), {
+      target: { value: "Updated" },
+    });
+
+    await waitFor(() =>
+      expect(screen.getByRole("button", { name: /save/i })).toBeEnabled()
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: /save/i }));
+
+    await waitFor(() => {
+      expect(updateTaskMock).toHaveBeenCalled();
+      expect(updateTaskMock).toHaveBeenCalledWith(
+        "1",
+        expect.objectContaining({
+          title: "Updated",
+          description: "Updated",
+          status: "todo",
+        })
       );
     });
   });
