@@ -186,7 +186,6 @@ const TaskList: React.FC<Props> = () => {
   const revalidator = useRevalidator();
 
   const [filterTitle, setFilterTitle] = React.useState(""); // client-side
-  const [taskStatus, setTaskStatus] = React.useState<"" | Status>(""); // task_status
   const [dateFrom, setDateFrom] = React.useState(""); // YYYY-MM-DD
   const [dateTo, setDateTo] = React.useState(""); // YYYY-MM-DD
   const [sortBy, setSortBy] = React.useState<"" | "created_at" | "status">(
@@ -215,7 +214,6 @@ const TaskList: React.FC<Props> = () => {
     revalidator.revalidate();
     // later -> PATCH /api/v1/tasks/{id} { status: to }
   };
-
 
   const { q, push } = useTaskQuery();
 
@@ -266,7 +264,7 @@ const TaskList: React.FC<Props> = () => {
               value={q.limit}
               onChange={(e) => {
                 const v = Math.min(100, Math.max(1, Number(e.target.value)));
-                push({limit:v,page:1})
+                push({ limit: v, page: 1 });
               }}
               className="rounded-md border border-slate-200 bg-white px-2 py-1 focus:outline-none focus:ring-2 focus:ring-indigo-300"
             >
@@ -283,9 +281,10 @@ const TaskList: React.FC<Props> = () => {
             <label className="block">
               <span className="block text-xs text-slate-600 mb-1">Status</span>
               <select
-                value={taskStatus}
+                value={q?.task_status ?? ""}
                 onChange={(e) => {
-                  setTaskStatus(e.target.value as "" | Status);
+                  const v = e.target.value as string;
+                  push({ task_status: v === "" ? undefined : (v as Status) ,page:1});
                 }}
                 className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-300"
               >
@@ -360,7 +359,6 @@ const TaskList: React.FC<Props> = () => {
           <button
             onClick={() => {
               setFilterTitle("");
-              setTaskStatus("");
               setDateFrom("");
               setDateTo("");
               setSortBy("created_at");
