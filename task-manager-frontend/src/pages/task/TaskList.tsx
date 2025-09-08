@@ -188,9 +188,7 @@ const TaskList: React.FC<Props> = () => {
   const [filterTitle, setFilterTitle] = React.useState(""); // client-side
   const [dateFrom, setDateFrom] = React.useState(""); // YYYY-MM-DD
   const [dateTo, setDateTo] = React.useState(""); // YYYY-MM-DD
-  const [sortBy, setSortBy] = React.useState<"" | "created_at" | "status">(
-    "created_at"
-  );
+
   const [order, setOrder] = React.useState<"asc" | "desc">("asc");
   const [limit, setLimit] = React.useState<number>(10);
 
@@ -284,7 +282,10 @@ const TaskList: React.FC<Props> = () => {
                 value={q?.task_status ?? ""}
                 onChange={(e) => {
                   const v = e.target.value as string;
-                  push({ task_status: v === "" ? undefined : (v as Status) ,page:1});
+                  push({
+                    task_status: v === "" ? undefined : (v as Status),
+                    page: 1,
+                  });
                 }}
                 className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-300"
               >
@@ -332,12 +333,18 @@ const TaskList: React.FC<Props> = () => {
                   Sort by
                 </span>
                 <select
-                  value={sortBy}
+                  value={q.sort_by ?? ""}
                   onChange={(e) =>
-                    setSortBy(e.target.value as "" | "created_at" | "status")
+                    push({
+                      sort_by:
+                        e.target.value === ""
+                          ? undefined
+                          : (e.target.value as "created_at" | "status"),
+                    })
                   }
                   className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-300"
                 >
+                  <option value="">NA</option>
                   <option value="created_at">Created at</option>
                   <option value="status">Status</option>
                 </select>
@@ -345,8 +352,12 @@ const TaskList: React.FC<Props> = () => {
               <label className="block">
                 <span className="block text-xs text-slate-600 mb-1">Order</span>
                 <select
-                  value={order}
-                  onChange={(e) => setOrder(e.target.value as "asc" | "desc")}
+                  value={q.order}
+                  onChange={(e) => {
+                    push({
+                      order: e.target.value as "asc" | "desc",
+                    });
+                  }}
                   className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-300"
                 >
                   <option value="asc">Asc</option>
@@ -361,7 +372,6 @@ const TaskList: React.FC<Props> = () => {
               setFilterTitle("");
               setDateFrom("");
               setDateTo("");
-              setSortBy("created_at");
               setOrder("asc");
               setLimit(10);
             }}
