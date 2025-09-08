@@ -36,22 +36,17 @@ const humanDate = (iso?: string) => {
   return d.toLocaleString(undefined, { month: "short", day: "numeric" });
 };
 
-// ===== Card =====
 const TaskCard: React.FC<{
   task: Task;
-  onDragStart: (id: string) => void;
   onEdit: (task: Task) => void;
   onDelete: (task: Task) => void;
-  onMoveLeft: (task: Task) => void;
-  onMoveRight: (task: Task) => void;
-}> = ({ task, onDragStart, onEdit, onDelete, onMoveLeft, onMoveRight }) => {
+}> = ({ task, onEdit, onDelete }) => {
   const meta = STATUS_META[task.status];
   return (
     <article
       draggable
       onDragStart={(e) => {
         e.dataTransfer.setData("text/plain", task.id);
-        onDragStart(task.id);
       }}
       className="group rounded-xl border border-slate-200 bg-white/90 hover:bg-white shadow-sm hover:shadow-md transition p-3 space-y-2 cursor-grab active:cursor-grabbing"
     >
@@ -125,46 +120,24 @@ const TaskCard: React.FC<{
           Created {humanDate(task.created_at)}
         </span>
       </div>
-
-      <div className="opacity-0 group-hover:opacity-100 transition flex justify-between pt-1">
-        <button
-          onClick={() => onMoveLeft(task)}
-          className="text-[11px] px-2 py-1 rounded-md border border-slate-200 hover:bg-slate-50"
-        >
-          ← Move
-        </button>
-        <button
-          onClick={() => onMoveRight(task)}
-          className="text-[11px] px-2 py-1 rounded-md border border-slate-200 hover:bg-slate-50"
-        >
-          Move →
-        </button>
-      </div>
     </article>
   );
 };
 
-// ===== Column =====
 const Column: React.FC<{
   status: Status;
   tasks: Task[];
   onDropTask: (id: string, to: Status) => void;
   onDragOver: (status: Status | null) => void;
-  onDragStartCard: (id: string) => void;
   onEdit: (task: Task) => void;
   onDelete: (task: Task) => void;
-  onMoveLeft: (task: Task) => void;
-  onMoveRight: (task: Task) => void;
 }> = ({
   status,
   tasks,
   onDropTask,
   onDragOver,
-  onDragStartCard,
   onEdit,
   onDelete,
-  onMoveLeft,
-  onMoveRight,
 }) => {
   const meta = STATUS_META[status];
   return (
@@ -210,11 +183,8 @@ const Column: React.FC<{
           <TaskCard
             key={t.id}
             task={t}
-            onDragStart={onDragStartCard}
             onEdit={onEdit}
             onDelete={onDelete}
-            onMoveLeft={onMoveLeft}
-            onMoveRight={onMoveRight}
           />
         ))}
       </div>
@@ -222,7 +192,7 @@ const Column: React.FC<{
   );
 };
 
-const TaskList: React.FC<Props> = ({ initial }) => {
+const TaskList: React.FC<Props> = () => {
   const tasks = useLoaderData() as TaskList;
   const revalidator = useRevalidator();
 
@@ -242,7 +212,6 @@ const TaskList: React.FC<Props> = ({ initial }) => {
   const [showAdd, setShowAdd] = React.useState(false);
   const [showEdit, setShowEdit] = React.useState<null | Task>(null);
   const [confirmDelete, setConfirmDelete] = React.useState<null | Task>(null);
-  const [dragId, setDragId] = React.useState<string | null>(null);
 
   // group into columns (client display)
   const grouped = React.useMemo(() => {
@@ -251,31 +220,11 @@ const TaskList: React.FC<Props> = ({ initial }) => {
     return by;
   }, [tasks]);
 
-  // ===== UI Handlers (intention-revealing, easy to wire later) =====
-  const moveStatus = async (task: Task, dir: "left" | "right") => {
-    const order: Status[] = ["todo", "in_progress", "done"];
-    const idx = order.indexOf(task.status);
-    const next =
-      dir === "left"
-        ? order[Math.max(0, idx - 1)]
-        : order[Math.min(order.length - 1, idx + 1)];
-    if (next !== task.status) {
-      await taskService.updateTask(task.id, {
-        title: task.title,
-        description: task.description,
-        status: next,
-      });
-      revalidator.revalidate();
-      // later -> PATCH /api/v1/tasks/{id} { status: next }
-    }
-  };
-
   const onDropTask = async (id: string, to: Status) => {
     await taskService.updateTask(id, {
       status: to,
     });
     revalidator.revalidate();
-    setDragId(null);
     // later -> PATCH /api/v1/tasks/{id} { status: to }
   };
 
@@ -458,11 +407,8 @@ const TaskList: React.FC<Props> = ({ initial }) => {
               tasks={grouped[s]}
               onDropTask={onDropTask}
               onDragOver={(st) => setHoverCol(st)}
-              onDragStartCard={(id) => setDragId(id)}
               onEdit={(t) => setShowEdit(t)}
               onDelete={(t) => setConfirmDelete(t)}
-              onMoveLeft={(t) => moveStatus(t, "left")}
-              onMoveRight={(t) => moveStatus(t, "right")}
             />
           </div>
         ))}
@@ -474,7 +420,7 @@ const TaskList: React.FC<Props> = ({ initial }) => {
           title="Add new task"
           initial={{ title: "", description: "", status: "todo" }}
           onClose={() => setShowAdd(false)}
-          onSubmit={(values) => {
+          onSubmit={() => {
             setShowAdd(false);
             revalidator.revalidate();
           }}
@@ -492,7 +438,7 @@ const TaskList: React.FC<Props> = ({ initial }) => {
             status: showEdit.status,
           }}
           onClose={() => setShowEdit(null)}
-          onSubmit={(values) => {
+          onSubmit={() => {
             setShowEdit(null);
             revalidator.revalidate();
           }}
