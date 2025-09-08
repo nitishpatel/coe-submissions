@@ -1,4 +1,5 @@
 import type { TaskCreateRequest } from "../types";
+import { addTaskSchema } from "./AddTaskSchema";
 
 const validTask:TaskCreateRequest = {
   title: "Task 1",
@@ -8,7 +9,7 @@ const validTask:TaskCreateRequest = {
 
 describe("AddTask schema", () => {
   it("fails if title is missing", () => {
-    const result = addtaskSchema.safeParse({
+    const result = addTaskSchema.safeParse({
     });
 
     expect(result.success).toBe(false);
