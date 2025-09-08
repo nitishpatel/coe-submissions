@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import type { Status, Task, TaskList as TaskListType } from "../../types";
 import { AddOrEditModal } from "../../components/TaskAddOrEditModal";
 import TaskDeleteModal from "../../components/TaskDeleteModal";
-import { useLoaderData, useNavigate, useRevalidator } from "react-router";
+import { useLoaderData, useRevalidator } from "react-router";
 import taskService from "../../services/taskService";
 import { useTaskQuery } from "../../hooks/useTaskQuery";
 
@@ -216,7 +216,6 @@ const TaskList: React.FC<Props> = () => {
     // later -> PATCH /api/v1/tasks/{id} { status: to }
   };
 
-  const navigate = useNavigate();
 
   const { q, push } = useTaskQuery();
 
@@ -287,7 +286,6 @@ const TaskList: React.FC<Props> = () => {
                 value={taskStatus}
                 onChange={(e) => {
                   setTaskStatus(e.target.value as "" | Status);
-                  setPage(1);
                 }}
                 className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-300"
               >
@@ -308,7 +306,6 @@ const TaskList: React.FC<Props> = () => {
                 value={dateFrom}
                 onChange={(e) => {
                   setDateFrom(e.target.value);
-                  setPage(1);
                 }}
                 className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-300"
               />
@@ -324,7 +321,6 @@ const TaskList: React.FC<Props> = () => {
                 value={dateTo}
                 onChange={(e) => {
                   setDateTo(e.target.value);
-                  setPage(1);
                 }}
                 className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-300"
               />
@@ -369,7 +365,6 @@ const TaskList: React.FC<Props> = () => {
               setDateTo("");
               setSortBy("created_at");
               setOrder("asc");
-              setPage(1);
               setLimit(10);
             }}
             className="ml-auto px-3 py-2 text-sm rounded-lg border border-slate-200 hover:bg-slate-50"
