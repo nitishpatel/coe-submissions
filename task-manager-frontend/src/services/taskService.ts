@@ -1,5 +1,5 @@
 
-import type { TaskList } from "../types";
+import type { Task, TaskCreateRequest, TaskList } from "../types";
 import { httpService } from "./http";
 import { withFallback } from "../utils/apiUtils";
 
@@ -14,6 +14,13 @@ export const taskService = {
   deleteTask:(taskId:string)=>{
     return withFallback(
       () => httpService.delete(`/tasks/${taskId}`),
+      undefined,
+      { toastOnError: true, toastMessage: "Error Deleting Task" }
+    );
+  },
+  addTask: async(data:TaskCreateRequest):Promise<Task>=>{
+    return withFallback(
+      () => httpService.post<Task>(`/tasks`,data),
       undefined,
       { toastOnError: true, toastMessage: "Error Deleting Task" }
     );
