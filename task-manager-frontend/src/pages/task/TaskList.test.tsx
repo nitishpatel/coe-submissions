@@ -63,7 +63,6 @@ describe("Tasklist", () => {
 
 describe("TaskList pagination & limit", () => {
   beforeEach(() => {
-    // supply loader data and a stubbed revalidator
     (RRD.useLoaderData as unknown as vi.Mock).mockReturnValue(taskListResponseMock);
     (RRD.useRevalidator as unknown as vi.Mock) = vi.fn(() => ({
       revalidate: vi.fn(),
@@ -80,12 +79,9 @@ describe("TaskList pagination & limit", () => {
       </Router>
     );
 
-    // click Next
     fireEvent.click(screen.getByRole("button", { name: /next/i }));
 
-    // wait for navigation to happen
     await waitFor(() => {
-      // expect page param to be 2
       expect(history.location.search).toMatch(/page=2/);
       expect(history.location.pathname).toBe("/task-list");
     });
@@ -100,7 +96,6 @@ describe("TaskList pagination & limit", () => {
       </Router>
     );
 
-    // click Prev
     fireEvent.click(screen.getByRole("button", { name: /prev/i }));
 
     await waitFor(() => {
@@ -117,14 +112,82 @@ describe("TaskList pagination & limit", () => {
       </Router>
     );
 
-    // find the Limit select and change it to 20
-    // the label text in your component is "Limit" — adjust if different
     const limitSelect = screen.getByRole("combobox", { name: /limit/i });
     fireEvent.change(limitSelect, { target: { value: "20" } });
 
     await waitFor(() => {
-      // expect limit param updated to 20
       expect(history.location.search).toMatch(/limit=20/);
+      expect(history.location.pathname).toBe("/task-list");
+    });
+  });
+});
+
+describe("TaskList status select (URL behavior)", () => {
+  beforeEach(() => {
+    (RRD.useLoaderData as unknown as vi.Mock).mockReturnValue(taskListResponseMock);
+    (RRD.useRevalidator as unknown as vi.Mock) = vi.fn(() => ({
+      revalidate: vi.fn(),
+      state: "idle",
+    }));
+  });
+
+  it("selecting a status adds task_status to the URL", async () => {
+    const history = createMemoryHistory({ initialEntries: ["/task-list"] });
+
+    render(
+      <Router location={history.location.pathname + history.location.search} navigator={history}>
+        <TaskList />
+      </Router>
+    );
+
+    const statusSelect = screen.getByLabelText(/status/i) as HTMLSelectElement;
+    fireEvent.change(statusSelect, { target: { value: "todo" } });
+
+    await waitFor(() => {
+      const params = new URLSearchParams(history.location.search);
+      expect(params.get("task_status")).toBe("todo");
+      expect(history.location.pathname).toBe("/task-list");
+    });
+  });
+
+  it("selecting 'All' removes task_status from the URL when previously set", async () => {
+    const history = createMemoryHistory({ initialEntries: ["/task-list?task_status=todo"] });
+
+    render(
+      <Router location={history.location.pathname + history.location.search} navigator={history}>
+        <TaskList />
+      </Router>
+    );
+
+    const statusSelect = screen.getByLabelText(/status/i) as HTMLSelectElement;
+    expect(statusSelect.value).toBe("todo");
+
+    fireEvent.change(statusSelect, { target: { value: "" } });
+
+    await waitFor(() => {
+      const params = new URLSearchParams(history.location.search);
+      expect(params.get("task_status")).toBeNull(); // param removed
+      expect(history.location.pathname).toBe("/task-list");
+    });
+  });
+
+  it("changing status from one value to another updates the URL accordingly", async () => {
+    const history = createMemoryHistory({ initialEntries: ["/task-list?task_status=in_progress"] });
+
+    render(
+      <Router location={history.location.pathname + history.location.search} navigator={history}>
+        <TaskList />
+      </Router>
+    );
+
+    const statusSelect = screen.getByLabelText(/status/i) as HTMLSelectElement;
+    expect(statusSelect.value).toBe("in_progress");
+
+    fireEvent.change(statusSelect, { target: { value: "done" } });
+
+    await waitFor(() => {
+      const params = new URLSearchParams(history.location.search);
+      expect(params.get("task_status")).toBe("done");
       expect(history.location.pathname).toBe("/task-list");
     });
   });
