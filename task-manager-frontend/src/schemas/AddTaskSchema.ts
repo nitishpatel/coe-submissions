@@ -5,7 +5,10 @@ export const addTaskSchema = z
     title: z.string("Title should be between 2 to 200 characters long")
     .min(2,"Title should be between 2 to 200 characters long")
     .max(200,"Title should be between 2 to 200 characters long"),
-    description: z.string().nullable().optional()
+    description: z.string().nullable().optional(),
+    status:z.enum(["todo","in_progress","done"] as const,{
+      error:"Invalid Status"
+    }).default("todo")
   })
   .strict()
 
