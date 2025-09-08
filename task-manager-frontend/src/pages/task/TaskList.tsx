@@ -1,9 +1,10 @@
 import React, { useEffect } from "react";
-import type { Status, Task, TaskList } from "../../types";
+import type { Status, Task, TaskList as TaskListType } from "../../types";
 import { AddOrEditModal } from "../../components/TaskAddOrEditModal";
 import TaskDeleteModal from "../../components/TaskDeleteModal";
-import { useLoaderData, useRevalidator } from "react-router";
+import { useLoaderData, useNavigate, useRevalidator } from "react-router";
 import taskService from "../../services/taskService";
+import { useTaskQuery } from "../../hooks/useTaskQuery";
 
 type Props = {
   initial?: Task[]; // seed list
@@ -131,14 +132,7 @@ const Column: React.FC<{
   onDragOver: (status: Status | null) => void;
   onEdit: (task: Task) => void;
   onDelete: (task: Task) => void;
-}> = ({
-  status,
-  tasks,
-  onDropTask,
-  onDragOver,
-  onEdit,
-  onDelete,
-}) => {
+}> = ({ status, tasks, onDropTask, onDragOver, onEdit, onDelete }) => {
   const meta = STATUS_META[status];
   return (
     <section
@@ -180,12 +174,7 @@ const Column: React.FC<{
 
       <div className="grid gap-3 auto-rows-min">
         {tasks.map((t) => (
-          <TaskCard
-            key={t.id}
-            task={t}
-            onEdit={onEdit}
-            onDelete={onDelete}
-          />
+          <TaskCard key={t.id} task={t} onEdit={onEdit} onDelete={onDelete} />
         ))}
       </div>
     </section>
@@ -193,7 +182,7 @@ const Column: React.FC<{
 };
 
 const TaskList: React.FC<Props> = () => {
-  const tasks = useLoaderData() as TaskList;
+  const tasks = useLoaderData() as TaskListType;
   const revalidator = useRevalidator();
 
   const [filterTitle, setFilterTitle] = React.useState(""); // client-side
@@ -204,7 +193,6 @@ const TaskList: React.FC<Props> = () => {
     "created_at"
   );
   const [order, setOrder] = React.useState<"asc" | "desc">("asc");
-  const [page, setPage] = React.useState<number>(1);
   const [limit, setLimit] = React.useState<number>(10);
 
   // UI state
@@ -228,6 +216,10 @@ const TaskList: React.FC<Props> = () => {
     // later -> PATCH /api/v1/tasks/{id} { status: to }
   };
 
+  const navigate = useNavigate();
+
+  const { q, push } = useTaskQuery();
+
   // ===== Render =====
   return (
     <main className="px-4 md:px-6 lg:px-10 xl:px-16 py-8 md:py-12">
@@ -248,16 +240,21 @@ const TaskList: React.FC<Props> = () => {
         <div className="flex items-center gap-2">
           <div className="flex rounded-lg border border-slate-200 bg-white/60">
             <button
-              onClick={() => setPage((p) => Math.max(1, p - 1))}
+              disabled={q.page === 1}
+              onClick={() => {
+                push({ page: q.page - 1 });
+              }}
               className="px-3 py-1.5 text-sm rounded-l-lg hover:bg-slate-50"
             >
               Prev
             </button>
             <div className="px-3 py-1.5 text-sm border-x border-slate-200">
-              Page {page}
+              Page {q.page}
             </div>
             <button
-              onClick={() => setPage((p) => p + 1)}
+              onClick={() => {
+                push({ page: q.page + 1 });
+              }}
               className="px-3 py-1.5 text-sm rounded-r-lg hover:bg-slate-50"
             >
               Next
@@ -267,11 +264,10 @@ const TaskList: React.FC<Props> = () => {
           <label className="flex items-center gap-2 text-sm">
             <span className="text-slate-500">Limit</span>
             <select
-              value={limit}
+              value={q.limit}
               onChange={(e) => {
                 const v = Math.min(100, Math.max(1, Number(e.target.value)));
-                setLimit(v);
-                setPage(1);
+                push({limit:v,page:1})
               }}
               className="rounded-md border border-slate-200 bg-white px-2 py-1 focus:outline-none focus:ring-2 focus:ring-indigo-300"
             >
