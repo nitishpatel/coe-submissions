@@ -43,6 +43,20 @@ services:
     entrypoint: ["/app/entrypoint.sh"]
     restart: on-failure
 
+  frontend:
+      build:
+        context: ./task-manager-frontend
+        dockerfile: ../docker/frontend/Dockerfile
+      ports:
+        - "5173:5173"
+      environment:
+        VITE_API_URL: ${VITE_API_URL}
+      volumes:
+        - ./task-manager-frontend:/usr/src/app:cached
+        - /usr/src/app/node_modules
+      depends_on:
+        - backend
+      restart: unless-stopped
 volumes:
   task_manager_db_data:
   backend_venv:
