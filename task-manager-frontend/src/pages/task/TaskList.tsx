@@ -303,9 +303,9 @@ const TaskList: React.FC<Props> = () => {
               </span>
               <input
                 type="date"
-                value={dateFrom}
+                value={q.date_from ?? ""}
                 onChange={(e) => {
-                  setDateFrom(e.target.value);
+                  push({date_from:e.target.value})
                 }}
                 className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-300"
               />
@@ -318,9 +318,9 @@ const TaskList: React.FC<Props> = () => {
               </span>
               <input
                 type="date"
-                value={dateTo}
+                value={q.date_to ?? ""}
                 onChange={(e) => {
-                  setDateTo(e.target.value);
+                  push({date_to:e.target.value})
                 }}
                 className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-300"
               />
@@ -369,11 +369,14 @@ const TaskList: React.FC<Props> = () => {
 
           <button
             onClick={() => {
-              setFilterTitle("");
-              setDateFrom("");
-              setDateTo("");
-              setOrder("asc");
-              setLimit(10);
+              push({
+                page:1,
+                sort_by:"created_at",
+                limit:10,
+                date_from:null,
+                date_to:null,
+                task_status:null,
+              })
             }}
             className="ml-auto px-3 py-2 text-sm rounded-lg border border-slate-200 hover:bg-slate-50"
           >
