@@ -31,6 +31,7 @@ services:
       DATABASE_URL: ${DATABASE_URL:-postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@db:${POSTGRES_PORT:-5432}/${POSTGRES_DB:-task_manager}}
       APP_MODULE: ${APP_MODULE:-app.main:app}
       RELOAD: ${RELOAD:-true}
+      JWT_SECRET: ${JWT_SECRET}                #
     ports:
       - "8000:8000"
     volumes:
