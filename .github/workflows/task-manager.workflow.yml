@@ -98,13 +98,14 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
-      - name: Run frontend tests (use built image directly)
+      - name: Run frontend tests (compose test files; vitest CI)
         working-directory: task-manager
         run: |
           set -euo pipefail
           echo "Running frontend tests using docker-compose.test.yml + docker-compose.ci.yml"
           docker compose -f docker-compose.test.yml -f docker-compose.ci.yml run --rm --no-deps \
             frontend-tester npm run test:ci
+
 
       - name: Tear down (frontend)
         if: always()

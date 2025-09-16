@@ -1,15 +1,16 @@
+version: "3.8"
+
 services:
   backend-tester:
-    # In CI we want to use the pre-built image (loaded by build action)
     image: task-manager-backend:ci
-    build: null               # disable rebuild by compose; use image instead
+    build: null
     environment:
       JWT_SECRET: ${JWT_SECRET}
-    volumes:
-      - ./task-manager-backend/tests:/app/tests  # still mount tests if you want
-    entrypoint: ["/app/entrypoint.sh"]
+    working_dir: /app
+    entrypoint: ["sh", "-c"]
 
   frontend-tester:
     image: task-manager-frontend:ci
     build: null
+    working_dir: /usr/src/app
     entrypoint: ["sh", "-c"]
