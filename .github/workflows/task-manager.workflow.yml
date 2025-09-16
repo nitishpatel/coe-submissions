@@ -66,10 +66,10 @@ jobs:
         working-directory: task-manager
         run: |
           set -euo pipefail
-          echo "Running tests in a one-off container; explicitly passing JWT_SECRET into the container..."
+          echo "Running tests in a one-off container;"
           docker compose run --rm --no-deps \
             -e JWT_SECRET="${JWT_SECRET}" \
-            backend uv run pytest .
+            backend-tester uv run pytest .
 
       - name: Tear down docker-compose resources
         if: always()

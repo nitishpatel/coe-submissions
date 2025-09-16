@@ -45,6 +45,20 @@ services:
     entrypoint: ["/app/entrypoint.sh"]
     restart: on-failure
 
+  backend-tester:
+    profiles: ['tester']
+    build:
+      context: ./task-manager-backend
+      dockerfile: ../docker/backend/Dockerfile
+    environment:
+      JWT_SECRET: ${JWT_SECRET}                #
+    volumes:
+      - ./task-manager-backend/app:/app/app
+      - ./task-manager-backend/tests:/app/tests
+      - ./task-manager-backend/pyproject.toml:/app/pyproject.toml:ro
+      - ./task-manager-backend/uv.lock:/app/uv.lock:ro
+      - backend_venv:/app/.venv
+
   frontend:
     build:
       context: ./task-manager-frontend
@@ -64,8 +78,6 @@ services:
     build:
       context: ./task-manager-frontend
       dockerfile: ../docker/frontend/Dockerfile
-    ports:
-      - "5173:5173"
     environment:
       VITE_API_URL: ${VITE_API_URL}
     volumes:
