@@ -1,4 +1,4 @@
-name: Task Manager CI
+name: Task Manager CI (test-compose based)
 
 on:
   push:
@@ -7,14 +7,16 @@ on:
       - "task-manager/task-manager-frontend/**"
       - "task-manager/docker/backend/**"
       - "task-manager/docker/frontend/**"
-      - "task-manager/docker-compose.yml"
+      - "task-manager/docker-compose.test.yml"
+      - "task-manager/docker-compose.ci.yml"
   pull_request:
     paths:
       - "task-manager/task-manager-backend/**"
       - "task-manager/task-manager-frontend/**"
       - "task-manager/docker/backend/**"
       - "task-manager/docker/frontend/**"
-      - "task-manager/docker-compose.yml"
+      - "task-manager/docker-compose.test.yml"
+      - "task-manager/docker-compose.ci.yml"
 
 concurrency:
   group: task-manager-ci-${{ github.ref }}
@@ -22,7 +24,7 @@ concurrency:
 
 jobs:
   backend:
-    name: Backend — build & test
+    name: Backend — build image & run tests (test-compose)
     runs-on: ubuntu-latest
     env:
       COMPOSE_PROJECT_NAME: task-manager-ci
@@ -33,15 +35,6 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Fail fast if JWT_SECRET missing
-        run: |
-          if [ -z "${JWT_SECRET:-}" ]; then
-            echo "::error::JWT_SECRET secret is not provided. Add it at Settings → Secrets and variables → Actions."
-            exit 1
-          else
-            echo "JWT_SECRET present (masked)."
-          fi
-
       - name: Setup Docker Buildx
         uses: docker/setup-buildx-action@v2
 
@@ -51,8 +44,10 @@ jobs:
           docker compose version
 
       - name: Build backend image (buildx with cache)
+        # Build backend image and load it into the runner so compose can use it
         uses: docker/build-push-action@v4
         with:
+          # repo-relative build context and Dockerfile
           context: ./task-manager/task-manager-backend
           file: ./task-manager/docker/backend/Dockerfile
           tags: task-manager-backend:ci
@@ -61,12 +56,12 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
-      - name: Run backend tests (compose-run, pass JWT_SECRET)
+      - name: Run backend tests (compose test files; pass JWT_SECRET)
         working-directory: task-manager
         run: |
           set -euo pipefail
-          echo "Running backend tests in a one-off container; passing JWT_SECRET..."
-          docker compose run --rm --no-deps \
+          echo "Running backend tests using docker-compose.test.yml + docker-compose.ci.yml"
+          docker compose -f docker-compose.test.yml -f docker-compose.ci.yml run --rm --no-deps \
             -e JWT_SECRET="${JWT_SECRET}" \
             backend-tester uv run pytest .
 
@@ -75,10 +70,10 @@ jobs:
         working-directory: task-manager
         run: |
           set -euo pipefail
-          docker compose down --volumes --remove-orphans
+          docker compose -f docker-compose.test.yml -f docker-compose.ci.yml down --volumes --remove-orphans
 
   frontend:
-    name: Frontend — build & test
+    name: Frontend — build image & run tests (test-compose)
     runs-on: ubuntu-latest
     env:
       COMPOSE_PROJECT_NAME: task-manager-ci
@@ -106,17 +101,17 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
-      - name: Run frontend tests (compose-run, Vitest CI)
+      - name: Run frontend tests (compose test files; vitest CI)
         working-directory: task-manager
         run: |
           set -euo pipefail
-          echo "Running frontend tests in a one-off container (vitest run --coverage)..."
-          docker compose run --rm --no-deps \
-            frontend-tester sh -c "npm run test:ci"
+          echo "Running frontend tests using docker-compose.test.yml + docker-compose.ci.yml"
+          docker compose -f docker-compose.test.yml -f docker-compose.ci.yml run --rm --no-deps \
+            frontend-tester npm run test:ci
 
       - name: Tear down (frontend)
         if: always()
         working-directory: task-manager
         run: |
           set -euo pipefail
-          docker compose down --volumes --remove-orphans
+          docker compose -f docker-compose.test.yml -f docker-compose.ci.yml down --volumes --remove-orphans
