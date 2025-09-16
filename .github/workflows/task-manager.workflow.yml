@@ -1,6 +1,5 @@
 name: Backend CI (task-manager-backend)
 
-# Run only when backend or backend docker config changes
 on:
   push:
     paths:
@@ -22,7 +21,7 @@ jobs:
     name: Build backend image & run tests
     runs-on: ubuntu-latest
 
-    # Make JWT_SECRET available to steps (must be configured in repository secrets)
+    # Job-level env: JWT_SECRET must be created in repo Secrets
     env:
       COMPOSE_PROJECT_NAME: task-manager-ci
       JWT_SECRET: ${{ secrets.JWT_SECRET }}
@@ -32,7 +31,6 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Fail fast if JWT_SECRET missing
-        # Clear, early failure instead of cryptic runtime errors
         run: |
           if [ -z "${JWT_SECRET:-}" ]; then
             echo "::error::JWT_SECRET secret is not provided. Add it at Settings → Secrets and variables → Actions."
@@ -49,12 +47,17 @@ jobs:
           docker version
           docker compose version
 
-      - name: Build backend image (compose)
+      - name: Build backend image (buildx with GitHub Actions cache)
         working-directory: task-manager
-        run: |
-          set -euo pipefail
-          echo "Building backend image..."
-          DOCKER_BUILDKIT=1 docker compose build --progress=plain backend
+        uses: docker/build-push-action@v4
+        with:
+          context: ./task-manager-backend
+          file: ./docker/backend/Dockerfile
+          tags: task-manager-backend:ci
+          push: false
+          load: true
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
       - name: Run tests (compose-run with JWT_SECRET passed into container)
         working-directory: task-manager
