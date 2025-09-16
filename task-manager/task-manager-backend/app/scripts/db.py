@@ -26,7 +26,7 @@ def _alembic_config(db_url: Optional[str] = None) -> Config:
     cfg = Config(str(ini_path))
     cfg.set_main_option("script_location", str(root / "migrations"))
 
-    url = db_url or app_config.postgres_url
+    url = db_url or app_config.get_database_url()
     if not url:
         print("[db] DATABASE_URL not set", file=sys.stderr)
         sys.exit(2)

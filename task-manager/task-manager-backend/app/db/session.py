@@ -13,7 +13,7 @@ def _engine_kwargs(url: str) -> dict:
     return kwargs
 
 
-DATABASE_URL = config.postgres_url
+DATABASE_URL = config.get_database_url()
 
 engine = create_engine(DATABASE_URL, **_engine_kwargs(DATABASE_URL))
 

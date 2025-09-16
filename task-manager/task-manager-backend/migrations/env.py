@@ -17,7 +17,7 @@ if config.config_file_name is not None:
 
 target_metadata = Base.metadata
 
-DATABASE_URL = app_config.postgres_url
+DATABASE_URL = app_config.get_database_url()
 config.set_main_option("sqlalchemy.url", DATABASE_URL)
 
 

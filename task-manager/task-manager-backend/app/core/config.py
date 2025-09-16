@@ -12,7 +12,6 @@ class Config:
         self.postgres_db = os.getenv("POSTGRES_DB")
         self.postgres_port = os.getenv("POSTGRES_PORT")
         self.postgres_host = os.getenv("POSTGRES_HOST")
-        self.postgres_url = f"postgresql://{self.postgres_user}:{self.postgres_password}@{self.postgres_host}:{self.postgres_port}/{self.postgres_db}"
         self.jwt_secret = os.getenv("JWT_SECRET")
         self.jwt_algorithm = "HS256"
     @classmethod
@@ -21,5 +20,12 @@ class Config:
             cls._instance = cls()
         return cls._instance
 
+    def get_database_url(self) -> str:
+        # Only construct postgres URL if essential parts present
+        if all([self.postgres_host, self.postgres_port, self.postgres_db, self.postgres_user]):
+            user = self.postgres_user
+            pw = f":{self.postgres_password}" if self.postgres_password else ""
+            return f"postgresql://{user}{pw}@{self.postgres_host}:{self.postgres_port}/{self.postgres_db}"
 
+        return "sqlite:////tmp/test.db"
 config = Config.get_instance()
