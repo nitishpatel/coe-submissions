@@ -1,29 +1,32 @@
-name: Backend CI (task-manager-backend)
+name: Task Manager CI
 
 on:
   push:
     paths:
       - "task-manager/task-manager-backend/**"
+      - "task-manager/task-manager-frontend/**"
       - "task-manager/docker/backend/**"
+      - "task-manager/docker/frontend/**"
       - "task-manager/docker-compose.yml"
   pull_request:
     paths:
       - "task-manager/task-manager-backend/**"
+      - "task-manager/task-manager-frontend/**"
       - "task-manager/docker/backend/**"
+      - "task-manager/docker/frontend/**"
       - "task-manager/docker-compose.yml"
 
 concurrency:
-  group: backend-ci-${{ github.ref }}
+  group: task-manager-ci-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  test:
-    name: Build backend image & run tests
+  backend:
+    name: Backend — build & test
     runs-on: ubuntu-latest
-
-    # JWT_SECRET must be created in repository secrets
     env:
       COMPOSE_PROJECT_NAME: task-manager-ci
+      # JWT_SECRET must be set in repo Secrets
       JWT_SECRET: ${{ secrets.JWT_SECRET }}
 
     steps:
@@ -47,31 +50,71 @@ jobs:
           docker version
           docker compose version
 
-      - name: Build backend image (buildx with GitHub Actions cache)
-        # NOTE: do NOT use `working-directory` for the action inputs; instead give repo-relative paths
+      - name: Build backend image (buildx with cache)
         uses: docker/build-push-action@v4
         with:
-          # build context (repo-root relative)
           context: ./task-manager/task-manager-backend
-          # Dockerfile path (repo-root relative)
           file: ./task-manager/docker/backend/Dockerfile
-          # tag the built image for local use in the runner
           tags: task-manager-backend:ci
           push: false
           load: true
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
-      - name: Run tests (compose-run with JWT_SECRET passed into container)
+      - name: Run backend tests (compose-run, pass JWT_SECRET)
         working-directory: task-manager
         run: |
           set -euo pipefail
-          echo "Running tests in a one-off container;"
+          echo "Running backend tests in a one-off container; passing JWT_SECRET..."
           docker compose run --rm --no-deps \
             -e JWT_SECRET="${JWT_SECRET}" \
             backend-tester uv run pytest .
 
-      - name: Tear down docker-compose resources
+      - name: Tear down (backend)
+        if: always()
+        working-directory: task-manager
+        run: |
+          set -euo pipefail
+          docker compose down --volumes --remove-orphans
+
+  frontend:
+    name: Frontend — build & test
+    runs-on: ubuntu-latest
+    env:
+      COMPOSE_PROJECT_NAME: task-manager-ci
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Ensure Docker CLI and Compose available
+        run: |
+          docker version
+          docker compose version
+
+      - name: Build frontend image (buildx with cache)
+        uses: docker/build-push-action@v4
+        with:
+          context: ./task-manager/task-manager-frontend
+          file: ./task-manager/docker/frontend/Dockerfile
+          tags: task-manager-frontend:ci
+          push: false
+          load: true
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Run frontend tests (compose-run, Vitest CI)
+        working-directory: task-manager
+        run: |
+          set -euo pipefail
+          echo "Running frontend tests in a one-off container (vitest run --coverage)..."
+          docker compose run --rm --no-deps \
+            frontend-tester sh -c "npm run test:ci"
+
+      - name: Tear down (frontend)
         if: always()
         working-directory: task-manager
         run: |

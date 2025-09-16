@@ -78,8 +78,6 @@ services:
     build:
       context: ./task-manager-frontend
       dockerfile: ../docker/frontend/Dockerfile
-    environment:
-      VITE_API_URL: ${VITE_API_URL}
     volumes:
       - ./task-manager-frontend:/usr/src/app:cached
       - /usr/src/app/node_modules
