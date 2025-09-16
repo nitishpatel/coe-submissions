@@ -9,4 +9,4 @@ services:
     image: task-manager-frontend:ci
     build: null
     working_dir: /usr/src/app
-    command: ["npm", "run","test:ci"]
+    command: ["sh", "-c", "npm run test:ci"]
