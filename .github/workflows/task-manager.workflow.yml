@@ -99,12 +99,12 @@ jobs:
           cache-to: type=gha,mode=max
 
       - name: Run frontend tests (use built image)
-          working-directory: task-manager
-          run: |
-            set -euo pipefail
-            echo "Running frontend tests using docker-compose.test.yml + docker-compose.ci.yml"
-            docker compose -f docker-compose.test.yml -f docker-compose.ci.yml run --rm --no-deps \
-              frontend-tester
+        working-directory: task-manager
+        run: |
+          set -euo pipefail
+          echo "Running frontend tests using docker-compose.test.yml + docker-compose.ci.yml"
+          docker compose -f docker-compose.test.yml -f docker-compose.ci.yml run --rm --no-deps \
+            frontend-tester
 
       - name: Tear down (frontend)
         if: always()
