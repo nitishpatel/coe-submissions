@@ -23,5 +23,4 @@ frontend-test:
 .PHONY: frontend-test-ci
 frontend-test-ci:
 	# CI run (no reinstall; uses built image)
-	docker compose -f docker-compose.yml -f docker-compose.ci.yml run --rm --no-deps \
-		frontend-tester npm run test:ci
+	docker compose -f docker-compose.yml -f docker-compose.ci.yml run --rm frontend-tester npm run test:ci

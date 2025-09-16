@@ -1,4 +1,4 @@
-name: Task Manager CI (test-compose based)
+name: Task Manager CI (test-compose based, no entrypoint in CI)
 
 on:
   push:
@@ -24,11 +24,10 @@ concurrency:
 
 jobs:
   backend:
-    name: Backend — build image & run tests (test-compose)
+    name: Backend — build image & run tests (no entrypoint)
     runs-on: ubuntu-latest
     env:
       COMPOSE_PROJECT_NAME: task-manager-ci
-      # JWT_SECRET must be set in repo Secrets
       JWT_SECRET: ${{ secrets.JWT_SECRET }}
 
     steps:
@@ -44,10 +43,8 @@ jobs:
           docker compose version
 
       - name: Build backend image (buildx with cache)
-        # Build backend image and load it into the runner so compose can use it
         uses: docker/build-push-action@v4
         with:
-          # repo-relative build context and Dockerfile
           context: ./task-manager/task-manager-backend
           file: ./task-manager/docker/backend/Dockerfile
           tags: task-manager-backend:ci
@@ -56,7 +53,7 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
-      - name: Run backend tests (compose test files; pass JWT_SECRET)
+      - name: Run backend tests (use built image directly; pass JWT_SECRET)
         working-directory: task-manager
         run: |
           set -euo pipefail
@@ -101,7 +98,7 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
-      - name: Run frontend tests (compose test files; vitest CI)
+      - name: Run frontend tests (use built image directly)
         working-directory: task-manager
         run: |
           set -euo pipefail

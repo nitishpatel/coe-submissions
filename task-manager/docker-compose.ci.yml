@@ -12,7 +12,4 @@ services:
   frontend-tester:
     image: task-manager-frontend:ci
     build: null
-    # Important: do NOT mount node_modules (so built image's node_modules are used)
-    volumes:
-      - ./task-manager-frontend:/usr/src/app:cached   # optional: mount source to pick up tests
     entrypoint: ["sh", "-c"]
