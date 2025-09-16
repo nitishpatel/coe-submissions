@@ -3,12 +3,10 @@ services:
     image: task-manager-backend:ci
     build: null
     working_dir: /app
-    entrypoint: ["sh", "-c"]
     command: ["uv", "run","pytest","."]
 
   frontend-tester:
     image: task-manager-frontend:ci
     build: null
     working_dir: /usr/src/app
-    entrypoint: ["sh", "-c"]
     command: ["npm", "run","test:ci"]
