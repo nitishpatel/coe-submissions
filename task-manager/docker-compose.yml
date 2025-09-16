@@ -34,7 +34,8 @@ services:
     ports:
       - "8000:8000"
     volumes:
-      - ./task-manager-backend/app:/app/app:cached
+      - ./task-manager-backend/app:/app/app
+      - ./task-manager-backend/tests:/app/tests
       - ./task-manager-backend/pyproject.toml:/app/pyproject.toml:ro
       - ./task-manager-backend/uv.lock:/app/uv.lock:ro
       - backend_venv:/app/.venv
