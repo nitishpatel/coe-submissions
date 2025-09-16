@@ -1,19 +1,27 @@
 .PHONY: test
 test:
-	# Run tests in a one-off backend container
-	docker compose run --rm backend-tester uv run pytest .
+	docker compose -f docker-compose.yml -f docker-compose.test.yml run --rm --no-deps \
+		-e JWT_SECRET="${JWT_SECRET:-dev-secret}" \
+		backend-tester uv run pytest .
 
 .PHONY: test-watch
 test-watch:
-	# Run tests continuously with pytest-watch (ptw), requires pytest-watch in dev deps
-	docker compose run --rm backend-tester uv run ptw .
+	docker compose -f docker-compose.yml -f docker-compose.test.yml run --rm backend-tester uv run ptw .
+
+.PHONY: test-ci
+test-ci:
+	# CI-friendly: expects images named task-manager-backend:ci and task-manager-frontend:ci to exist (built & loaded)
+	docker compose -f docker-compose.yml -f docker-compose.ci.yml run --rm --no-deps \
+		backend-tester uv run pytest .
 
 .PHONY: frontend-test
 frontend-test:
-	# Run Vitest once in CI-friendly mode
-	docker compose run --rm --no-deps frontend-tester npm run test:ci
+	# local dev watch
+	docker compose -f docker-compose.yml -f docker-compose.test.yml run --rm --no-deps \
+		frontend-tester npm run test
 
-.PHONY: frontend-test-watch
-frontend-test-watch:
-	# Run Vitest in watcher mode (local dev)
-	docker compose run --rm --no-deps frontend-tester npm run test
+.PHONY: frontend-test-ci
+frontend-test-ci:
+	# CI run (no reinstall; uses built image)
+	docker compose -f docker-compose.yml -f docker-compose.ci.yml run --rm --no-deps \
+		frontend-tester npm run test:ci

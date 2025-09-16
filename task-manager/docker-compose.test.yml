@@ -1,0 +1,25 @@
+services:
+  backend-tester:
+    profiles: ['tester']
+    build:
+      context: ./task-manager-backend
+      dockerfile: ../docker/backend/Dockerfile
+    environment:
+      JWT_SECRET: ${JWT_SECRET:-dev-secret}
+    volumes:
+      - ./task-manager-backend/app:/app/app
+      - ./task-manager-backend/tests:/app/tests
+      - ./task-manager-backend/pyproject.toml:/app/pyproject.toml:ro
+      - ./task-manager-backend/uv.lock:/app/uv.lock:ro
+      - backend_venv:/app/.venv
+    entrypoint: ["/app/entrypoint.sh"]
+
+  frontend-tester:
+    profiles: ['tester']
+    build:
+      context: ./task-manager-frontend
+      dockerfile: ../docker/frontend/Dockerfile
+    volumes:
+      - ./task-manager-frontend:/usr/src/app:cached
+      - /usr/src/app/node_modules
+    entrypoint: ["sh", "-c"]
