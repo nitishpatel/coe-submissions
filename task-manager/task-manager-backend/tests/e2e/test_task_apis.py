@@ -12,10 +12,11 @@ def make_task(authenticated_client,):
     return _make_task
 
 
-def test_task_create_api(authenticated_client, make_task,):
+def test_task_create_api(make_task):
     response = make_task()
     assert response.status_code == 201
     assert response.json()["title"] == "Test Task"
+
 
 def test_task_list_api(authenticated_client, make_task):
     make_task()
