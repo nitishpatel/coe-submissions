@@ -53,14 +53,14 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
-      - name: Run backend tests (use built image directly; pass JWT_SECRET)
+      - name: Run backend tests (use built image)
         working-directory: task-manager
         run: |
           set -euo pipefail
           echo "Running backend tests using docker-compose.test.yml + docker-compose.ci.yml"
           docker compose -f docker-compose.test.yml -f docker-compose.ci.yml run --rm --no-deps \
             -e JWT_SECRET="${JWT_SECRET}" \
-            backend-tester uv run pytest .
+            backend-tester
 
       - name: Tear down (backend)
         if: always()
@@ -98,14 +98,13 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
-      - name: Run frontend tests (compose test files; vitest CI)
-        working-directory: task-manager
-        run: |
-          set -euo pipefail
-          echo "Running frontend tests using docker-compose.test.yml + docker-compose.ci.yml"
-          docker compose -f docker-compose.test.yml -f docker-compose.ci.yml run --rm --no-deps \
-            frontend-tester npm run test:ci
-
+      - name: Run frontend tests (use built image)
+          working-directory: task-manager
+          run: |
+            set -euo pipefail
+            echo "Running frontend tests using docker-compose.test.yml + docker-compose.ci.yml"
+            docker compose -f docker-compose.test.yml -f docker-compose.ci.yml run --rm --no-deps \
+              frontend-tester
 
       - name: Tear down (frontend)
         if: always()
