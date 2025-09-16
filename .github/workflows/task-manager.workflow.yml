@@ -21,12 +21,23 @@ jobs:
   test:
     name: Build backend image & run tests
     runs-on: ubuntu-latest
+
+    # Make secrets/env available to all steps in this job
     env:
       COMPOSE_PROJECT_NAME: task-manager-ci
       JWT_SECRET: ${{ secrets.JWT_SECRET }}
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+
+      - name: Fail fast if JWT_SECRET missing
+        # Helpful clear error rather than cryptic runtime TypeError
+        run: |
+          if [ -z "${JWT_SECRET:-}" ]; then
+            echo "ERROR: JWT_SECRET is not set in repository secrets. Add it at Settings → Secrets and variables → Actions."
+            exit 1
+          fi
 
       - name: Setup Docker Buildx
         uses: docker/setup-buildx-action@v2
@@ -43,12 +54,14 @@ jobs:
           echo "Building backend image..."
           DOCKER_BUILDKIT=1 docker compose build --progress=plain backend
 
-      - name: Run tests (make test)
+      - name: Run tests (compose-run with secrets passed into container)
         working-directory: task-manager
         run: |
           set -euo pipefail
-          echo "Running Makefile test target..."
-          make test
+          echo "Running tests in a one-off container;"
+          docker compose run --rm --no-deps \
+            -e JWT_SECRET="${JWT_SECRET}" \
+            backend uv run pytest .
 
       - name: Tear down docker-compose resources
         if: always()
