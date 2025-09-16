@@ -23,7 +23,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       COMPOSE_PROJECT_NAME: task-manager-ci
-      JWT_SECRET: ${{ vars.JWT_SECRET }}
+      JWT_SECRET: ${{ secrets.JWT_SECRET }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
