@@ -21,7 +21,7 @@ jobs:
     name: Build backend image & run tests
     runs-on: ubuntu-latest
 
-    # Job-level env: JWT_SECRET must be created in repo Secrets
+    # JWT_SECRET must be created in repository secrets
     env:
       COMPOSE_PROJECT_NAME: task-manager-ci
       JWT_SECRET: ${{ secrets.JWT_SECRET }}
@@ -48,11 +48,14 @@ jobs:
           docker compose version
 
       - name: Build backend image (buildx with GitHub Actions cache)
-        working-directory: task-manager
+        # NOTE: do NOT use `working-directory` for the action inputs; instead give repo-relative paths
         uses: docker/build-push-action@v4
         with:
-          context: ./task-manager-backend
-          file: ./docker/backend/Dockerfile
+          # build context (repo-root relative)
+          context: ./task-manager/task-manager-backend
+          # Dockerfile path (repo-root relative)
+          file: ./task-manager/docker/backend/Dockerfile
+          # tag the built image for local use in the runner
           tags: task-manager-backend:ci
           push: false
           load: true
